@@ -1,0 +1,20 @@
+INSERT INTO kos_fasilitas (id, kos_id, fasilitas_id) VALUES
+-- Kos 1
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', '0ea73547-18b1-40f2-82f5-512809b06b3c'),
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', '1d7989d1-1093-43dd-a0c0-ecaa003fc790'),
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', '86f94065-bcd3-41b7-b640-dc2422a4e100'),
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', 'a39d9218-4212-4b63-8693-de3b7780dc97'),
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', '7ca03951-b6c9-4785-9826-52f5f2f73ba7'),
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', '72d6d1e5-4463-4ab0-b095-45afe4939cc2'),
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', '44d36a8d-c844-478b-b9a4-610498c7b5e4'),
+(gen_random_uuid(), 'c0585ab1-abeb-4761-ad0b-3754e9373afd', '552cc723-f19b-48d6-956f-055ff7949a3b'),
+
+-- Kos 2
+(gen_random_uuid(), 'fbbfee2d-d92e-4b35-9d1e-562b3382f0f1', '1d7989d1-1093-43dd-a0c0-ecaa003fc790'),
+(gen_random_uuid(), 'fbbfee2d-d92e-4b35-9d1e-562b3382f0f1', '86f94065-bcd3-41b7-b640-dc2422a4e100'),
+(gen_random_uuid(), 'fbbfee2d-d92e-4b35-9d1e-562b3382f0f1', 'a39d9218-4212-4b63-8693-de3b7780dc97'),
+(gen_random_uuid(), 'fbbfee2d-d92e-4b35-9d1e-562b3382f0f1', '7ca03951-b6c9-4785-9826-52f5f2f73ba7'),
+(gen_random_uuid(), 'fbbfee2d-d92e-4b35-9d1e-562b3382f0f1', '72d6d1e5-4463-4ab0-b095-45afe4939cc2'),
+(gen_random_uuid(), 'fbbfee2d-d92e-4b35-9d1e-562b3382f0f1', '44d36a8d-c844-478b-b9a4-610498c7b5e4'),
+(gen_random_uuid(), 'fbbfee2d-d92e-4b35-9d1e-562b3382f0f1', '552cc723-f19b-48d6-956f-055ff7949a3b');
+
