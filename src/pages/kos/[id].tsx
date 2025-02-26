@@ -30,7 +30,10 @@ export default function DetailKosPage() {
                     kos_images(url_foto),
                     users:pemilik_id (user_name, user_ig, user_email, user_phone),
                     kos_rule,
-                    kos_note
+                    kos_note,
+                    kos_alamat,
+                    kos_longitude,
+                    kos_latitude
                 `)
                 .eq("kos_id", id)
                 .single();

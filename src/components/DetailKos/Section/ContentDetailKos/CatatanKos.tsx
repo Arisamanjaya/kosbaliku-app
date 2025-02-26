@@ -1,31 +1,31 @@
 import { useState } from "react";
 
 interface CatatanKosProps {
-    catatan: string[];
-}
+    kos: { kos_note: string };
+    maxLength?: number; // Panjang maksimal sebelum dipotong
+    }
 
-    const CatatanKos: React.FC<CatatanKosProps> = ({ catatan }) => {
-    const [isExpanded, setIsExpanded] = useState(false);
-    
-    // Batasan jumlah catatan yang ditampilkan sebelum "Lihat Selengkapnya"
-    const previewLimit = 2;
-    const displayedNotes = isExpanded ? catatan : catatan.slice(0, previewLimit);
+    export default function CatatanKos({ kos, maxLength = 150 }: CatatanKosProps) {
+    const [expanded, setExpanded] = useState(false);
+
+    const catatan = kos.kos_note || ""; // Pastikan tidak undefined
+    const shouldTruncate = catatan.length > maxLength;
+    const displayedText = expanded || !shouldTruncate ? catatan : catatan.slice(0, maxLength) + "...";
 
     return (
-        <div className="text-slate-700 text-sm leading-relaxed">
-        {displayedNotes.map((note, index) => (
-            <p key={index} className="mb-2">{note}</p>
-        ))}
-        {catatan.length > previewLimit && (
-            <button
-            className="text-blue-600 font-semibold mt-2 hover:underline"
-            onClick={() => setIsExpanded(!isExpanded)}
-            >
-            {isExpanded ? "Tampilkan Lebih Sedikit" : "Lihat Selengkapnya"}
-            </button>
-        )}
-        </div>
+    <div className="bg-white y-2">
+        <div className="text-2xl font-semibold text-slate-800 mb-4">Catatan Kos </div>
+            <div className="">
+                <p className="text-slate-500 text-base font-normal leading-relaxed">{displayedText}</p>
+                {shouldTruncate && (
+                    <button
+                    onClick={() => setExpanded(!expanded)}
+                    className="text-slate-500 font-medium hover:underline mt-1 underline"
+                    >
+                {expanded ? "Tampilkan lebih sedikit" : "Lihat selengkapnya"}
+                </button>
+            )}
+            </div>
+    </div>
     );
-};
-
-export default CatatanKos;
+}

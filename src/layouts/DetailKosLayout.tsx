@@ -10,7 +10,7 @@ import CatatanKos from "../components/DetailKos/Section/ContentDetailKos/Catatan
 export default function DetailKosLayout({ kos }: { kos: any }) {
     return (
         <GlobalLayout>
-            <div className="max-w-7xl mx-auto pt-8 flex flex-col md:flex-row justify-between">
+            <div className="max-w-7xl mx-auto py-8 flex flex-col md:flex-row justify-between">
                 {/* Bagian Kiri */}
                 <div className="max-w-4xl flex flex-col gap-6">
                     <HeaderDetailKos kos={kos} />
@@ -21,7 +21,9 @@ export default function DetailKosLayout({ kos }: { kos: any }) {
                     <hr className="border"/>
                     <LingkunganKos kos={kos.fasilitasLingkungan}/>
                     <hr className="border"/>
-                    <CatatanKos catatan={kos}/>
+                    <CatatanKos kos={kos}/>
+                    <hr className="border"/>
+                    <LokasiKos kos={kos} />
                 </div>
 
                 {/* Bagian Kanan */}
