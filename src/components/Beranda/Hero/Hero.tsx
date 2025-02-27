@@ -34,7 +34,7 @@ export default function Hero() {
             {/* Text di Tengah */}
         <div className="relative text-white text-center flex flex-col justify-center h-full max-w-7xl mx-auto px-4">
             <h1 className="text-3xl md:text-4xl font-semibold">Cari Kos di Bali?</h1>
-            <h2 className="text-lg md:text-xl mt-2">Cari, Jelajahi, dan Temukan Kos Impian Kamu di sini.</h2>
+            <h2 className="text-lg md:text-xl mt-2">Cari, Jelajahin, dan Temukan Kos Impian Kamu di sini.</h2>
         </div>
         {/* Search Bar */}
         <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 translate-y-1/2 w-full max-w-lg px-4">
