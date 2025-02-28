@@ -42,7 +42,7 @@ export default function KosCard({
             </div>
           )}
         </div>
-        <div className="py-3 flex flex-col gap-1">
+        <div className="py-2 flex flex-col gap-1">
           <div className="flex justify-between items-center">
             <p className="text-xs font-medium text-primary-500 border border-primary-500 rounded-full px-2 py-1">
               {tipe}
@@ -51,17 +51,17 @@ export default function KosCard({
               {kosAvail ? "Kamar Tersedia" : "Kamar Kosong"}
             </p>
           </div>
-          <h5 className="text-md font-semibold">{nama}</h5>
-          <div className="flex items-center gap-1">
-            <IconMapPin size={14} className="text-gray-500" />
+          <h5 className="text-md font-semibold text-slate-800">{nama}</h5>
+          <div className="flex items-center gap-1 text-slate-500">
+            <IconMapPin size={14} className="" />
             <p className="text-sm font-medium">{lokasi}</p>
           </div>
-          <p className="text-xs font-light truncate">
+          <p className="text-xs font-light truncate text-slate-500">
             {fasilitas.length > 0 ? fasilitas.join(" • ") : "Tidak ada fasilitas"}
           </p>
         </div>
         <h5 className="text-secondary-500">
-          Rp{harga ? harga.toLocaleString() : "0"}/{durasi}
+          <span className="font-semibold">Rp{harga ? harga.toLocaleString() : "0"}</span>/{durasi}
         </h5>
       </div>
     </Link>

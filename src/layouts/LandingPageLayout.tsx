@@ -6,8 +6,10 @@ export default function LandingPageLayout() {
     return (
         <>
             <HeroLandingPage />
+            <div className='py-10 flex flex-col gap-8'>
             <KosPremium/>
             <KosRekomen />
+            </div>
         </>
     );
 }
