@@ -62,7 +62,7 @@ export default function KosRekomen() {
         ) : (
           <>
             {/* Mobile - pakai grid dan KosCardMobile */}
-            <div className="grid grid-cols-2 gap-6 sm:flex justify-between md:hidden">
+            <div className="flex flex-wrap justify-between md:hidden">
               {kosRekomen.map((kos) => (
                 <KosCardMobile
                   key={kos.kos_id}
