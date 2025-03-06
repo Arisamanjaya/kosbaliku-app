@@ -9,7 +9,7 @@ export default function CardPemilik({ kos }: { kos: any }) {
                 </span>
             </div>
             <div className="flex items-center">
-                <h5 className="text-secondary-500 text-xl font-semibold">Rp{kos.harga}</h5>
+                <h5 className="text-secondary-500 text-xl font-semibold">Rp{kos.harga.toLocaleString("id-ID")}</h5>
                 <span className="text-secondary-500 text-sm font-normal">/{kos.durasi}</span>
             </div>
             <hr />

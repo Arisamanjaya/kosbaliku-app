@@ -2,7 +2,7 @@ import { useRouter } from "next/router";
 import { useEffect, useState } from "react";
 import DetailKosLayout from "../../layouts/DetailKosLayout";
 import { extractIdFromSlug } from "../../utils/slugify";
-import { fetchKosDetail } from "../../lib/fetch/fetchkosdetail";
+import { fetchKosDetail } from "../../lib/api/apiDetail";
 
 export default function DetailKosPage() {
     const router = useRouter();

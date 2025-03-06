@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
     IconAdjustmentsHorizontal,
     IconArrowsUpDown,
@@ -10,8 +10,31 @@ import FilterModal from "./components/FilterModal";
 export default function FilterKos() {
     const [isPremium, setIsPremium] = useState(false);
     const [sortOption, setSortOption] = useState("Rekomen");
-    const [filterCount, setFilterCount] = useState(0); // update ini setelah user apply filter di modal
+    const [filterCount, setFilterCount] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    // Scroll behavior handler
+    useEffect(() => {
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+
+            if (currentScrollY < 80) {
+                setIsVisible(true); // Selalu tampil di bagian atas awal
+            } else if (currentScrollY > lastScrollY) {
+                setIsVisible(false); // Scroll ke bawah, hide
+            } else {
+                setIsVisible(true); // Scroll ke atas, show
+            }
+
+            setLastScrollY(currentScrollY);
+        };
+
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, [lastScrollY]);
 
     const handleSortClick = () => {
         const options = ["Rekomen", "Harga Terendah", "Harga Tertinggi"];
@@ -21,8 +44,12 @@ export default function FilterKos() {
     };
 
     return (
-        <div className="w-full pl-6 md:px-8 lg:px-10 py-3 bg-white sticky top-16 z-10">
-            <div className="flex gap-2 max-w-7xl mx-auto">
+        <div
+            className={`w-full pl-6 md:px-8 lg:px-10 py-6 bg-white sticky top-16 z-20 max-w-3xl transition-transform duration-300 ${
+                isVisible ? "translate-y-0" : "-translate-y-full"
+            }`}
+        >
+            <div className="flex gap-2 mx-auto">
                 {/* Filter Button */}
                 <button
                     className={`border px-4 py-2 rounded-full flex items-center gap-2 ${

@@ -1,6 +1,7 @@
+
 import CariKosLayout from "../layouts/CariKosLayout";
 
 
-export default function CariKos() {
-    return <CariKosLayout kos={undefined} />;
+export default function CariKosPage() {
+    return <CariKosLayout />;
 }

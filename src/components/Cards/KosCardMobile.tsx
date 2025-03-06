@@ -1,20 +1,26 @@
 import { IconMapPin } from "@tabler/icons-react";
 import Link from "next/link";
-import { KosData } from "../../types/kosData"; // pastikan ini import yang benar sesuai struktur project-mu
+import { KosData } from "../../types/kosData";
 import { slugify } from "../../utils/slugify";
 
-export default function KosCardMobile({
-    kos_id,
-    kos_nama,
-    kos_lokasi,
-    fasilitas = [],
-    harga,
-    kos_tipe,
-    durasi = "bulan",
-    kos_avail,
-    kos_premium,
-    gambar,
-}: KosData) {
+interface KosCardMobileProps {
+    kos: KosData;
+}
+
+export default function KosCardMobile({ kos }: KosCardMobileProps) {
+    const {
+        kos_id,
+        kos_nama,
+        kos_lokasi,
+        fasilitas = [],
+        harga,
+        kos_tipe,
+        durasi = "bulan",
+        kos_avail,
+        kos_premium,
+        gambar,
+    } = kos;
+
     return (
         <Link href={`/kos/${slugify(kos_nama, kos_id)}`} className="cursor-pointer">
             <div className="w-40">
@@ -49,7 +55,7 @@ export default function KosCardMobile({
                     </p>
                 </div>
                 <h5 className="text-secondary-500 text-sm">
-                    <span className="font-semibold">Rp{harga.toLocaleString()}</span>/{durasi}
+                    <span className="font-semibold">Rp{harga.toLocaleString("id-ID")}</span>/{durasi}
                 </h5>
             </div>
         </Link>

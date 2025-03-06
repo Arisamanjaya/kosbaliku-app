@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { fetchKos } from "../lib/fetch/fetchkoslist"; // Pastikan fetchKos sudah ada di `lib/fetchkos.ts`
+import { fetchKos } from "../lib/api/fetchkosberanda"; // Pastikan fetchKos sudah ada di `lib/fetchkos.ts`
 import { KosData } from "../types/kosData"; // Import type biar clean
 
 export function useKosPremium(limit: number = 4) {
