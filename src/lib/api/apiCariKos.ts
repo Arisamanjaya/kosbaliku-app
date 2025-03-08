@@ -43,6 +43,9 @@ export async function fetchKosList({
     if (durasi) query = query.filter('harga_kos.tipe_durasi', 'eq', durasi);
 
     // Filter harga (gunakan `gte` dan `lte` jika nilainya valid)
+    // Filter harga hanya jika harga tersedia
+    query = query.not('harga_kos.harga', 'is', null); // Pastikan harga tidak null
+
     if (hargaMin > 0) query = query.gte('harga_kos.harga', hargaMin);
     if (hargaMax > 0) query = query.lte('harga_kos.harga', hargaMax);
 
@@ -64,16 +67,16 @@ export async function fetchKosList({
 
     // Mapping hasil agar lebih bersih & konsisten
     return filteredData.map((kos: any) => {
-        const hargaKos = kos.harga_kos?.[0] ?? { harga: 0, tipe_durasi: 'bulan' };
+        const hargaKos = kos.harga_kos?.[0]; // Jangan beri default { harga: 0 }
         return {
             kos_id: kos.kos_id,
             kos_nama: kos.kos_nama,
             kos_lokasi: kos.kos_lokasi,
             kos_tipe: kos.kos_tipe,
-            harga: hargaKos.harga,
-            durasi: hargaKos.tipe_durasi,
+            harga: hargaKos ?. harga ?? 0, // Gunakan null jika tidak ada harga
+            durasi: hargaKos ? hargaKos.tipe_durasi : 'bulan',
             gambar: kos.kos_images?.[0]?.url_foto || '/placeholder.jpg',
             fasilitas: kos.kos_fasilitas?.map((f: any) => f.fasilitas.fasilitas_nama) ?? []
         };
-    });
+    });    
 }

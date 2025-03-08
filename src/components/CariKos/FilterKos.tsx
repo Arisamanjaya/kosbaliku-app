@@ -21,7 +21,7 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
-
+    
     // Scroll behavior handler
     useEffect(() => {
         const handleScroll = () => {
@@ -41,6 +41,7 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
         window.addEventListener("scroll", handleScroll);
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY]);
+
 
     const handleSortClick = () => {
         const options = ["Rekomen", "Harga Terendah", "Harga Tertinggi"];

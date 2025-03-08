@@ -13,18 +13,20 @@ export default function CariKosLayout() {
     const [hasMore, setHasMore] = useState(true);
     const [filters, setFilters] = useState({
         premium: false,
-        minPrice: null,
-        maxPrice: null,
+        minPrice: 100000, // Default minimal harga
+        maxPrice: Infinity, // Default harga maksimum
     });
 
+    // ✅ State untuk menghitung jumlah filter yang aktif
     const [filterCount, setFilterCount] = useState(0); 
+
     const handleResetFilter = () => {
         setFilters({
             premium: false,
-            minPrice: null,
-            maxPrice: null,
+            minPrice: 100000, // Set ulang ke default
+            maxPrice: Infinity,
         });
-        setFilterCount(0); // ✅ Reset filter count juga
+        setFilterCount(0);
         setPage(1);
         setHasMore(true);
         loadKos(false);

@@ -55,7 +55,7 @@ export default function KosCard({ kos }: KosCardProps) {
                     </p>
                 </div>
                 <h5 className="text-secondary-500">
-                    <span className="font-semibold">Rp{harga.toLocaleString("id-ID")}</span>/{durasi}
+                    <span className="font-semibold">Rp{(harga ?? 0).toLocaleString("id-ID")}</span>/{durasi}
                 </h5>
             </div>
         </Link>

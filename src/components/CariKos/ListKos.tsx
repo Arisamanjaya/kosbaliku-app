@@ -39,7 +39,9 @@ export default function ListKos({ kosList = [], onLoadMore, hasMore = false }: L
         <div className="w-full max-w-3xl px-6 md:px-8 lg:px-10 py-3">
             {/* Grid Container */}
             <div className="grid grid-cols-2 gap-4">
-                {kosList.map((kos) => (
+                {kosList
+                .filter((kos) => kos.harga > 0)
+                .map((kos) => (
                     <div key={kos.kos_id} className="w-full">
                         <div className="hidden md:block w-full max-w-[50vw]">
                             <KosCard kos={kos} />
