@@ -1,18 +1,24 @@
-import { useState, useEffect } from "react";
+import { useEffect, useState } from "react";
 import {
     IconAdjustmentsHorizontal,
     IconArrowsUpDown,
     IconFlame,
     IconFlameFilled,
+    IconX
 } from "@tabler/icons-react";
 import FilterModal from "./components/FilterModal";
 
-export default function FilterKos() {
+interface FilterKosProps {
+    filterCount: number;
+    setFilterCount: (count: number) => void;
+    onFilterChange: (filters: any) => void;
+    onResetFilter: () => void;
+}
+
+export default function FilterKos({ filterCount, setFilterCount, onFilterChange, onResetFilter }: FilterKosProps) {
     const [isPremium, setIsPremium] = useState(false);
     const [sortOption, setSortOption] = useState("Rekomen");
-    const [filterCount, setFilterCount] = useState(0);
     const [isModalOpen, setIsModalOpen] = useState(false);
-
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
 
@@ -43,60 +49,84 @@ export default function FilterKos() {
         setSortOption(options[nextIndex]);
     };
 
+    const handleApplyFilters = (count: number, appliedFilters: Partial<any>) => {
+        setFilterCount(count);
+        onFilterChange(appliedFilters);
+        setIsModalOpen(false);
+    };
+
+    const handleResetFilters = () => {
+        setFilterCount(0);
+        onResetFilter(); // ✅ Panggil reset di parent
+    };
+
     return (
-        <div
-            className={`w-full pl-6 md:px-8 lg:px-10 py-6 bg-white sticky top-16 z-20 max-w-3xl transition-transform duration-300 ${
-                isVisible ? "translate-y-0" : "-translate-y-full"
-            }`}
-        >
-            <div className="flex gap-2 mx-auto">
-                {/* Filter Button */}
-                <button
-                    className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
-                        filterCount > 0 ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
-                    }`}
-                    onClick={() => setIsModalOpen(true)}
-                >
-                    {filterCount > 0 ? (
-                        <span className="font-bold text-sm">{filterCount}</span>
-                    ) : (
-                        <IconAdjustmentsHorizontal size={16} />
-                    )}
-                    Filter Kos
-                </button>
+        <>
+            <div
+                className={`w-full pl-6 md:px-8 lg:px-10 py-6 bg-white sticky top-16 z-20 max-w-3xl transition-transform duration-300 ${
+                    isVisible ? "translate-y-0" : "-translate-y-full"
+                }`}
+            >
+                <div className="flex gap-2 mx-auto">
+                    {/* Filter Button */}
+                    <button
+                        className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
+                            filterCount > 0 ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
+                        }`}
+                        onClick={() => setIsModalOpen(true)}
+                    >
+                        {filterCount > 0 ? (
+                            <span className="font-bold text-sm bg-primary-500 px-1.5 text-white rounded-full">{filterCount}</span>
+                        ) : (
+                            <IconAdjustmentsHorizontal size={16} />
+                        )}
+                        Filter Kos
+                    </button>
 
-                {/* Premium Button */}
-                <button
-                    onClick={() => setIsPremium(!isPremium)}
-                    className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
-                        isPremium ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
-                    }`}
-                >
-                    {isPremium ? (
-                        <IconFlameFilled size={16} className="text-secondary-500" />
-                    ) : (
-                        <IconFlame size={16} className="text-secondary-500" />
+                    {/* Reset Filter Button */}
+                    {filterCount > 0 && (
+                        <button
+                            onClick={handleResetFilters} // ✅ Pakai function yang benar
+                            className="border border-red-400 text-red-500 px-4 py-2 rounded-full flex items-center gap-2"
+                        >
+                            <IconX size={16} />
+                            Hapus
+                        </button>
                     )}
-                    Premium
-                </button>
 
-                {/* Sort Button */}
-                <button
-                    onClick={handleSortClick}
-                    className="border border-slate-300 text-slate-800 px-4 py-2 rounded-full flex items-center gap-2"
-                >
-                    <IconArrowsUpDown size={16} />
-                    {sortOption}
-                </button>
+                    {/* Premium Button */}
+                    <button
+                        onClick={() => setIsPremium(!isPremium)}
+                        className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
+                            isPremium ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
+                        }`}
+                    >
+                        {isPremium ? (
+                            <IconFlameFilled size={16} className="text-secondary-500" />
+                        ) : (
+                            <IconFlame size={16} className="text-secondary-500" />
+                        )}
+                        Premium
+                    </button>
+
+                    {/* Sort Button */}
+                    <button
+                        onClick={handleSortClick}
+                        className="border border-slate-300 text-slate-800 px-4 py-2 rounded-full flex items-center gap-2"
+                    >
+                        <IconArrowsUpDown size={16} />
+                        {sortOption}
+                    </button>
+                </div>
             </div>
 
             {/* Modal Filter */}
             {isModalOpen && (
                 <FilterModal
                     onClose={() => setIsModalOpen(false)}
-                    onApply={(count: number) => setFilterCount(count)}
+                    onApply={handleApplyFilters}
                 />
             )}
-        </div>
+        </>
     );
 }

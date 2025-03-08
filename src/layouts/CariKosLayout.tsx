@@ -3,23 +3,43 @@ import FilterKos from '../components/CariKos/FilterKos';
 import ListKos from '../components/CariKos/ListKos';
 import { useEffect, useState } from 'react';
 import { fetchKosList } from '../lib/api/apiCariKos';
+import { KosData } from '../types/kosData';
 
 export default function CariKosLayout() {
-    const [kosList, setKosList] = useState<any[]>([]);
+    const [kosList, setKosList] = useState<KosData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [page, setPage] = useState(1); // untuk pagination
-    const [hasMore, setHasMore] = useState(true); // flag kalau masih ada data
+    const [page, setPage] = useState(1);
+    const [hasMore, setHasMore] = useState(true);
+    const [filters, setFilters] = useState({
+        premium: false,
+        minPrice: null,
+        maxPrice: null,
+    });
 
+    const [filterCount, setFilterCount] = useState(0); 
+    const handleResetFilter = () => {
+        setFilters({
+            premium: false,
+            minPrice: null,
+            maxPrice: null,
+        });
+        setFilterCount(0); // ✅ Reset filter count juga
+        setPage(1);
+        setHasMore(true);
+        loadKos(false);
+    };
+    
+    // Fungsi untuk memuat data kos (dengan filter)
     const loadKos = async (isLoadMore = false) => {
         setLoading(true);
         try {
-            const data = await fetchKosList({ page, limit: 10 });
+            const data = await fetchKosList({ page, limit: 10, ...filters });
 
             if (data.length === 0) {
-                setHasMore(false); // sudah tidak ada data lagi
+                setHasMore(false);
             } else {
-                setKosList(prev => isLoadMore ? [...prev, ...data] : data);
+                setKosList((prev) => (isLoadMore ? [...prev, ...data] : data));
             }
         } catch (err: any) {
             setError(err.message || 'Gagal memuat data kos');
@@ -28,18 +48,27 @@ export default function CariKosLayout() {
         }
     };
 
+    // Fetch data awal saat pertama render atau saat filter berubah
     useEffect(() => {
+        setPage(1);
         loadKos(false);
-    }, []);
+    }, [filters]);
 
+    // Fungsi untuk memuat lebih banyak data
     const handleLoadMore = () => {
-        setPage(prev => prev + 1);
+        setPage((prev) => prev + 1);
         loadKos(true);
     };
 
     return (
         <GlobalLayout>
-            <FilterKos />
+             <FilterKos 
+                filterCount={filterCount} // ✅ Kirim filterCount
+                setFilterCount={setFilterCount} // ✅ Kirim updater-nya juga
+                onFilterChange={setFilters} 
+                onResetFilter={handleResetFilter} 
+            />
+
             <div className="max-w-2xl overflow-y-auto bg-white">
                 {loading && page === 1 ? (
                     <p className="text-center text-gray-500">Memuat data kos...</p>
@@ -49,7 +78,7 @@ export default function CariKosLayout() {
                     <>
                         <ListKos kosList={kosList} />
                         {hasMore && !loading && (
-                            <div className="text-center flex justify-center pr-4 py-4"> 
+                            <div className="text-center flex justify-center pr-4 py-4">
                                 <button
                                     onClick={handleLoadMore}
                                     className="px-4 py-2 text-primary-500"

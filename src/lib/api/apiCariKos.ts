@@ -29,31 +29,40 @@ export async function fetchKosList({
             kos_nama, 
             kos_lokasi, 
             kos_tipe, 
-            harga_kos(harga, tipe_durasi), 
-            kos_images(url_foto),
-            kos_fasilitas(fasilitas(fasilitas_nama))
+            harga_kos:harga_kos(harga, tipe_durasi), 
+            kos_images:kos_images(url_foto),
+            kos_fasilitas:kos_fasilitas(fasilitas(fasilitas_nama))
         `)
         .range(start, end)
         .throwOnError();
 
+    // Filter berdasarkan tipe kos (jika dipilih)
     if (tipe) query = query.eq('kos_tipe', tipe);
-    if (durasi) query = query.eq('harga_kos.tipe_durasi', durasi);
+
+    // Filter berdasarkan durasi (harus gunakan `.filter()` karena nested JSON)
+    if (durasi) query = query.filter('harga_kos.tipe_durasi', 'eq', durasi);
+
+    // Filter harga (gunakan `gte` dan `lte` jika nilainya valid)
     if (hargaMin > 0) query = query.gte('harga_kos.harga', hargaMin);
     if (hargaMax > 0) query = query.lte('harga_kos.harga', hargaMax);
 
-    const { data } = await query;
+    // Ambil data dari Supabase
+    const { data, error }: { data: any; error: any } = await query;
 
-    // Filter fasilitas manual karena Supabase belum bisa query array of objects langsung
+    if (error) throw new Error(error.message);
+
+    // Jika ada filter fasilitas, lakukan filter di frontend
     let filteredData = data;
 
     if (fasilitas.length) {
-        filteredData = data.filter(kos =>
+        filteredData = data.filter((kos: any) =>
             fasilitas.every(f =>
                 kos.kos_fasilitas?.some((kf: any) => kf.fasilitas.fasilitas_nama === f)
             )
         );
     }
 
+    // Mapping hasil agar lebih bersih & konsisten
     return filteredData.map((kos: any) => {
         const hargaKos = kos.harga_kos?.[0] ?? { harga: 0, tipe_durasi: 'bulan' };
         return {
