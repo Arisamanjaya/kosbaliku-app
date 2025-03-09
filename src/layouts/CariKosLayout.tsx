@@ -4,6 +4,7 @@ import ListKos from '../components/CariKos/ListKos';
 import { useEffect, useState } from 'react';
 import { fetchKosList } from '../lib/api/apiCariKos';
 import { KosData } from '../types/kosData';
+import EmptyState from '../components/CariKos/components/EmptyState';
 
 export default function CariKosLayout() {
     const [kosList, setKosList] = useState<KosData[]>([]);
@@ -64,37 +65,44 @@ export default function CariKosLayout() {
 
     return (
         <GlobalLayout>
-             <FilterKos 
+            <FilterKos 
                 filterCount={filterCount} // ✅ Kirim filterCount
                 setFilterCount={setFilterCount} // ✅ Kirim updater-nya juga
                 onFilterChange={setFilters} 
                 onResetFilter={handleResetFilter} 
             />
 
-            <div className="max-w-2xl overflow-y-auto bg-white">
-                {loading && page === 1 ? (
-                    <p className="text-center text-gray-500">Memuat data kos...</p>
-                ) : error ? (
-                    <p className="text-center text-red-500">{error}</p>
-                ) : (
-                    <>
-                        <ListKos kosList={kosList} />
-                        {hasMore && !loading && (
-                            <div className="text-center flex justify-center pr-4 py-4">
-                                <button
-                                    onClick={handleLoadMore}
-                                    className="px-4 py-2 text-primary-500"
-                                >
-                                    Muat Lebih Banyak
-                                </button>
-                            </div>
-                        )}
-                        {loading && page > 1 && (
-                            <p className="text-center text-gray-500">Memuat data tambahan...</p>
-                        )}
-                    </>
-                )}
-            </div>
+        <div className="max-w-2xl overflow-y-auto bg-white">
+            {loading && page === 1 ? (
+                <p className="text-center text-gray-500">Memuat data kos...</p>
+            ) : error ? (
+                <p className="text-center text-red-500">{error}</p>
+            ) : kosList.length === 0 ? ( 
+                <EmptyState 
+                    message={filters.premium || filters.minPrice || filters.maxPrice
+                        ? "Tidak ada kos yang cocok dengan filter yang dipilih."
+                        : "Belum ada kos di lokasi ini. Coba cari di area lain!"
+                    } 
+                />
+            ) : (
+                <>
+                    <ListKos kosList={kosList} />
+                    {hasMore && !loading && (
+                        <div className="text-center flex justify-center pr-4 py-4">
+                            <button
+                                onClick={handleLoadMore}
+                                className="px-4 py-2 text-primary-500"
+                            >
+                                Muat Lebih Banyak
+                            </button>
+                        </div>
+                    )}
+                    {loading && page > 1 && (
+                        <p className="text-center text-gray-500">Memuat data tambahan...</p>
+                    )}
+                </>
+            )}
+        </div>
         </GlobalLayout>
     );
 }
