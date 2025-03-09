@@ -9,13 +9,23 @@ import {
 import FilterModal from "./components/FilterModal";
 
 interface FilterKosProps {
-    filterCount: number;
-    setFilterCount: (count: number) => void;
     onFilterChange: (filters: any) => void;
+    filterCount: number;
+    setFilterCount: React.Dispatch<React.SetStateAction<number>>;
+    filters: {
+        premium: boolean;
+        minPrice: number;
+        maxPrice: number;
+    };
+    setFilters: React.Dispatch<React.SetStateAction<{
+        premium: boolean;
+        minPrice: number;
+        maxPrice: number;
+    }>>;
     onResetFilter: () => void;
 }
 
-export default function FilterKos({ filterCount, setFilterCount, onFilterChange, onResetFilter }: FilterKosProps) {
+export default function FilterKos({ filterCount, setFilterCount, onFilterChange, onResetFilter, filters}: FilterKosProps) {
     const [isPremium, setIsPremium] = useState(false);
     const [sortOption, setSortOption] = useState("Rekomen");
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -124,8 +134,11 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
             {/* Modal Filter */}
             {isModalOpen && (
                 <FilterModal
-                    onClose={() => setIsModalOpen(false)}
-                    onApply={handleApplyFilters}
+                    initialFilters={filters} 
+                    onApply={(count, newFilters) => {
+                        handleApplyFilters(count, newFilters); // ✅ Update filters di parent
+                    }} 
+                    onClose={() => setIsModalOpen(false)} 
                 />
             )}
         </>

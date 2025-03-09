@@ -53,9 +53,12 @@ export default function CariKosLayout() {
 
     // Fetch data awal saat pertama render atau saat filter berubah
     useEffect(() => {
+        setKosList([]); // ✅ Reset list kos agar tidak append data lama
         setPage(1);
-        loadKos(false);
+        setHasMore(true);
+        loadKos(false); // ✅ Fetch ulang dari database
     }, [filters]);
+    
 
     // Fungsi untuk memuat lebih banyak data
     const handleLoadMore = () => {
@@ -63,14 +66,21 @@ export default function CariKosLayout() {
         loadKos(true);
     };
 
+    const handleFilterChange = (newFilters: typeof filters) => {
+        setFilters(newFilters); // ✅ Update state filters dengan data terbaru
+    };
+
     return (
         <GlobalLayout>
             <FilterKos 
-                filterCount={filterCount} // ✅ Kirim filterCount
-                setFilterCount={setFilterCount} // ✅ Kirim updater-nya juga
-                onFilterChange={setFilters} 
-                onResetFilter={handleResetFilter} 
+                filterCount={filterCount}  
+                setFilterCount={setFilterCount}  
+                filters={filters}  
+                setFilters={setFilters}  
+                onResetFilter={handleResetFilter}  
+                onFilterChange={handleFilterChange} // ✅ Implementasi function dengan update filters
             />
+
 
         <div className="max-w-2xl overflow-y-auto bg-white">
             {loading && page === 1 ? (

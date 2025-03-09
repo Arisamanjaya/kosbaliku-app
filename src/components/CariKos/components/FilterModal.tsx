@@ -1,23 +1,40 @@
 import { IconAirConditioning, IconArmchair, IconBath, IconBed, IconBolt, IconBuildingStore, IconCar, IconChefHat, IconCircleKey, IconDeviceCctv, IconDeviceTv, IconFridge, IconMotorbike, IconPlant, IconPropeller, IconServer, IconSoup, IconStack, IconToiletPaper, IconTrash, IconUser, IconWashMachine, IconWifi, IconWindow, IconX } from "@tabler/icons-react";
-import { JSX, useState } from "react";
+import { JSX, useEffect, useState } from "react";
 import { IconMan, IconWoman, IconUsers } from '@tabler/icons-react';
 
 interface FilterModalProps {
     onClose: () => void;
     onApply: (filterCount: number, filters: any) => void;
+    initialFilters: any; // Tambahkan prop ini untuk menyimpan filter terakhir
 }
 
-export default function FilterModal({ onClose, onApply }: FilterModalProps) {
-    const [tipe, setTipe] = useState("");
-    const [durasi, setDurasi] = useState("");
-    const [hargaMin, setHargaMin] = useState<number>(0);
-    const [hargaMax, setHargaMax] = useState<number>(0);
-    const [selectedFasilitas, setSelectedFasilitas] = useState<string[]>([]);
+export default function FilterModal({ onClose, onApply, initialFilters }: FilterModalProps) {
+    const [tipe, setTipe] = useState(initialFilters.tipe || "");
+    const [durasi, setDurasi] = useState(initialFilters.durasi || "");
+    const [hargaMin, setHargaMin] = useState(initialFilters.hargaMin || 0);
+    const [hargaMax, setHargaMax] = useState(initialFilters.hargaMax || 0);
+    const [selectedFasilitas, setSelectedFasilitas] = useState(initialFilters.fasilitas || []);
+
+    useEffect(() => {
+        setTipe(initialFilters.tipe || "");
+        setDurasi(initialFilters.durasi || "");
+        setHargaMin(initialFilters.hargaMin || 0);
+        setHargaMax(initialFilters.hargaMax || 0);
+        setSelectedFasilitas(initialFilters.fasilitas || []);
+    }, [initialFilters]);
 
     const toggleFasilitas = (fasilitas: string) => {
-        setSelectedFasilitas((prev) =>
+        setSelectedFasilitas((prev: string[]) =>
             prev.includes(fasilitas) ? prev.filter((f) => f !== fasilitas) : [...prev, fasilitas]
         );
+    };
+
+    const handleApply = () => {
+        const filters = { tipe, durasi, hargaMin, hargaMax, fasilitas: selectedFasilitas };
+        const filterCount = Object.values(filters).filter(value => value && value !== 0 && (!Array.isArray(value) || value.length !== 0)).length;
+        
+        onApply(filterCount, filters);
+        onClose();
     };
 
     const tipeIcons: Record<string, JSX.Element> = {
@@ -53,13 +70,6 @@ export default function FilterModal({ onClose, onApply }: FilterModalProps) {
         "Locker Bersama": <IconCircleKey size={24} />,
     };
 
-    const handleApply = () => {
-        const filters = { tipe, durasi, hargaMin, hargaMax, fasilitas: selectedFasilitas };
-        const filterCount = Object.values(filters).filter(value => value && value !== 0 && (!Array.isArray(value) || value.length !== 0)).length;
-        
-        onApply(filterCount, filters);
-        onClose();
-    };
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -101,10 +111,9 @@ export default function FilterModal({ onClose, onApply }: FilterModalProps) {
                         onChange={(e) => setDurasi(e.target.value)}
                     >
                         <option value="">Semua</option>
-                        <option value="harian">Harian</option>
-                        <option value="mingguan">Mingguan</option>
-                        <option value="bulanan">Bulanan</option>
-                        <option value="tahunan">Tahunan</option>
+                        <option value="Mingguan">Mingguan</option>
+                        <option value="Bulanan">Bulanan</option>
+                        <option value="Tahunan">Tahunan</option>
                     </select>
                 </div>
 
