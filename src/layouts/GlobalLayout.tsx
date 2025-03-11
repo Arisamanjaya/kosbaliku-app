@@ -8,12 +8,12 @@ interface LayoutProps {
 
 export default function BaseLayout({ children }: LayoutProps) {
     return (
-        <div className="flex flex-col center">
+        <div className="flex flex-col">    
         {/* Navbar */}
             <Navbar />
 
         {/* Konten Utama */}
-            <main className="w-full min-h-screen">{children}</main>
+            <main className="">{children}</main>
 
         {/* Footer */}
             <Footer />

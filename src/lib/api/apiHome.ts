@@ -17,7 +17,7 @@ export async function fetchRekomendasiKos(): Promise<KosData[]> {
         `)
         .eq('kos_premium', false)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(4);
 
     if (error) throw error;
 
@@ -51,7 +51,7 @@ export async function fetchPremiumKos(): Promise<KosData[]> {
         `)
         .eq('kos_premium', true)
         .order('created_at', { ascending: false })
-        .limit(5);
+        .limit(4);
 
     if (error) throw error;
 

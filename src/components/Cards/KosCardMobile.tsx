@@ -24,7 +24,7 @@ export default function KosCardMobile({ kos }: KosCardMobileProps) {
     return (
         <Link href={`/kos/${slugify(kos_nama, kos_id)}`} className="cursor-pointer">
             <div className="w-40">
-                <div className="w-full h-24 rounded-xl bg-slate-300 relative">
+                <div className="w-full h-28 rounded-xl bg-slate-300 relative">
                     <img
                         src={gambar || "/placeholder.jpg"}
                         alt={kos_nama}

@@ -1,89 +1,125 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { IconMenu2, IconX, IconSearch } from "@tabler/icons-react";
 
-export default function NavbarGlobal() {
-    const [isScrolled, setIsScrolled] = useState(false);
-    const [isMenuOpen, setIsMenuOpen] = useState(false);
-    const router = useRouter();
+function SearchBar({ onClick }: { onClick: () => void }) {
+  return (
+    <div className="relative hidden lg:block w-1/3 cursor-pointer" onClick={onClick}>
+        <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+        <input
+            type="text"
+            placeholder="Cari lokasi/daerah/alamat di Bali"
+            className=" w-full pl-10 pr-4 py-2 border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white cursor-pointer"
+            readOnly
+        />
+    </div>
+  );
+}
 
-    useEffect(() => {
-        const handleScroll = () => setIsScrolled(window.scrollY > 10);
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
+function MenuLinks() {
+  const menus = ["Beranda", "Cari Kos", "Tentang Kami", "Blog"];
+  return (
+    <ul className="hidden lg:flex gap-6 text-sm font-normal text-slate-500">
+      {menus.map((menu, index) => (
+        <li key={index}>
+          <a href="#" className="hover:text-primary-500 transition-colors">{menu}</a>
+        </li>
+      ))}
+    </ul>
+  );
+}
 
-    const handleNavigateToSearch = () => {
-        router.push("/search");
-    };
+function AuthButtons() {
+  return (
+    <div className="hidden lg:flex gap-4">
+      <button className="px-4 py-2 text-primary-500 border border-primary-500 rounded-full">Iklankan Kos</button>
+      <button className="px-4 py-2 bg-primary-500 text-white rounded-full">Masuk</button>
+    </div>
+  );
+}
 
+function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
+    const menus = ["Beranda", "Cari Kos", "Tentang Kami", "Blog"];
     return (
-        <nav
-            className={`sticky top-0 left-0 w-full z-50 transition-all px-6 md:px-8 lg:px-10 ${
-                isScrolled ? "bg-white shadow-sm backdrop-blur-md" : "bg-white bg-opacity-80 backdrop-blur-sm shadow-sm"
-            }`}
-        >
-            <div className="container mx-auto flex items-center justify-between max-w-7xl py-4">
-                {/* Logo */}
-                <h1 className="text-2xl font-semibold text-primary-500">KosBaliku</h1>
-
-                {/* Search Bar - Desktop Only */}
-                <div
-                    className="relative hidden md:block w-1/3 cursor-pointer"
-                    onClick={handleNavigateToSearch}
-                >
-                    <IconSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-                    <input
-                        type="text"
-                        placeholder="Cari lokasi/daerah/alamat di Bali"
-                        className="w-full pl-10 pr-4 py-2 border rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white cursor-pointer"
-                        readOnly
-                    />
-                </div>
-
-                {/* Desktop Menu */}
-                <ul className="hidden md:flex gap-6 text-sm font-normal text-slate-500">
-                    {["Beranda", "Cari Kos", "Tentang Kami", "Blog"].map((menu, index) => (
-                        <li key={index}>
-                            <a href="#" className="hover:text-primary-500 transition-colors">{menu}</a>
-                        </li>
-                    ))}
-                </ul>
-
-                {/* Desktop Buttons */}
-                <div className="hidden md:flex gap-4">
-                    <button className="px-4 py-2 text-primary-500 border border-primary-500 rounded-full">Iklankan Kos</button>
-                    <button className="px-4 py-2 bg-primary-500 text-white rounded-full">Masuk</button>
-                </div>
-
-                {/* Hamburger Button - Mobile Only */}
-                <button className="md:hidden" onClick={() => setIsMenuOpen(!isMenuOpen)}>
-                    {isMenuOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}
-                </button>
-            </div>
-
-            {/* Mobile Menu */}
-            <div
-                className={`fixed top-0 left-0 w-full h-full bg-white z-40 flex flex-col items-center justify-center transition-transform duration-300 ${
-                    isMenuOpen ? "translate-x-0" : "-translate-x-full"
-                }`}
-            >
-                <button className="absolute top-4 right-4" onClick={() => setIsMenuOpen(false)}>
-                    <IconX size={30} />
-                </button>
-                <ul className="flex flex-col gap-6 text-lg font-medium text-primary-500">
-                    {["Beranda", "Cari Kos", "Tentang Kami", "Blog"].map((menu, index) => (
-                        <li key={index}>
-                            <a href="#" className="hover:text-primary-700 transition-colors">{menu}</a>
-                        </li>
-                    ))}
-                </ul>
-                <hr className="w-2/3 border-slate-300 my-4" />
-                <button className="px-6 py-3 border border-primary-500 rounded-full text-primary-500">
-                    Iklankan Kos
-                </button>
-                <button className="px-6 py-3 bg-primary-500 text-white rounded-full mt-3">Masuk</button>
-            </div>
-        </nav>
+    <div className={`fixed flex-col flex top-0 right-0 h-screen w-3/4 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:hidden ${
+        isOpen ? "translate-x-0 opacity-100 pointer-events-auto" : "translate-x-full hidden"}`}>
+        <div className="flex justify-end p-4">
+        <button onClick={onClose}>
+            <IconX size={30} />
+        </button>
+        </div>
+        <ul className="flex flex-col items-center gap-6 text-lg font-medium text-primary-500">
+        {menus.map((menu, index) => (
+            <li key={index}>
+            <a href="#" className="hover:text-primary-700 transition-colors">{menu}</a>
+            </li>
+        ))}
+        </ul>
+        <hr className="w-2/3 border-slate-300 my-4 mx-auto" />
+        <div className="flex flex-col items-center gap-3">
+        <button className="px-6 py-3 border border-primary-500 rounded-full text-primary-500">
+            Iklankan Kos
+        </button>
+        <button className="px-6 py-3 bg-primary-500 text-white rounded-full">
+            Masuk
+        </button>
+        </div>
+    </div>
     );
+}
+
+export default function NavbarGlobal() {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const router = useRouter();
+
+  const handleScroll = useCallback(() => {
+    setIsScrolled(window.scrollY > 10);
+  }, []);
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+
+  useEffect(() => {
+    if (isMenuOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMenuOpen]);
+
+  return (
+    <nav className={`sticky top-0 left-0 w-full z-50 transition-all px-6 md:px-8 lg:px-10 ${
+      isScrolled ? "bg-white shadow-sm backdrop-blur-md" : "bg-white bg-opacity-80 backdrop-blur-sm shadow-sm"}`}>
+      <div className="container mx-auto flex items-center justify-between max-w-7xl py-4">
+        {/* Logo */}
+        <h1 className="text-2xl font-semibold text-primary-500">KosBaliku</h1>
+
+        {/* Search Bar */}
+        <SearchBar onClick={() => router.push("/search")} />
+
+        {/* Desktop Menu */}
+        <MenuLinks />
+
+        {/* Desktop Buttons */}
+        <AuthButtons />
+
+        {/* Mobile Menu Button */}
+        <div className="flex items-center gap-4">
+            <IconSearch className="lg:hidden text-slate-500" size={24} onClick={() => router.push("/search")}/>
+            <button className="lg:hidden text-slate-500" onClick={() => setIsMenuOpen(!isMenuOpen)}>
+                {isMenuOpen ? <IconX size={24} /> : <IconMenu2 size={24} />}
+            </button>
+        </div>
+      </div>
+
+      {/* Mobile Menu Overlay */}
+      <MobileMenu isOpen={isMenuOpen} onClose={() => setIsMenuOpen(false)} />
+    </nav>
+  );
 }

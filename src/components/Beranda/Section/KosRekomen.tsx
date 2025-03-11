@@ -44,14 +44,14 @@ export default function KosRekomen() {
                 ) : (
                     <>
                         {/* Mobile View */}
-                        <div className="grid grid-cols-2 gap-4 md:hidden">
+                        <div className="flex flex-wrap justify-between gap-4 md:hidden">
                             {kosRekomen.map((kos) => (
                                 <KosCardMobile key={kos.kos_id} kos={kos} />
                             ))}
                         </div>
 
                         {/* Desktop View */}
-                        <div className="hidden md:grid grid-cols-2 lg:grid-cols-4 gap-6">
+                        <div className="hidden md:flex flex-wrap justify-between gap-4">
                             {kosRekomen.map((kos) => (
                                 <KosCard key={kos.kos_id} kos={kos} />
                             ))}
