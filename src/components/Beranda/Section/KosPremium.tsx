@@ -44,14 +44,14 @@ export default function KosPremium() {
                 ) : (
                     <>
                         {/* Mobile View */}
-                        <div className="flex flex-wrap justify-between gap-4 md:hidden">
+                        <div className="grid grid-cols-2 gap-4 md:hidden">
                             {kosPremium.map((kos) => (
                                 <KosCardMobile key={kos.kos_id} kos={kos} />
                             ))}
                         </div>
 
                         {/* Desktop View */}
-                        <div className="hidden md:flex flex-wrap justify-between gap-4">
+                        <div className="hidden md:grid grid-cols-4 gap-4">
                             {kosPremium.map((kos) => (
                                 <KosCard key={kos.kos_id} kos={kos} />
                             ))}

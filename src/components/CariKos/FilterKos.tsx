@@ -74,11 +74,11 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
     return (
         <>
             <div
-                className={`w-full pl-6 md:px-8 lg:px-10 py-6 bg-white sticky top-16 z-20 max-w-3xl transition-transform duration-300 ${
+                className={`w-full pl-6 md:px-8 lg:px-10 py-4 lg:py-6 bg-white sticky top-16 z-20 max-w-3xl transition-transform duration-300 ${
                     isVisible ? "translate-y-0" : "-translate-y-full"
                 }`}
             >
-                <div className="flex gap-2 mx-auto">
+                <div className="flex gap-2 mx-auto text-sm lg:text-md">
                     {/* Filter Button */}
                     <button
                         className={`border px-4 py-2 rounded-full flex items-center gap-2 ${

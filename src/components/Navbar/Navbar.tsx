@@ -58,10 +58,10 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       </ul>
       <hr className="w-2/3 border-slate-300 my-4 mx-auto" />
       <div className="flex flex-col items-center gap-3">
-        <button className="px-6 py-3 border border-primary-500 rounded-full text-primary-500">
+        <button className="min-w-40 px-6 py-3 border border-primary-500 rounded-full text-primary-500">
           Iklankan Kos
         </button>
-        <button className="px-6 py-3 bg-primary-500 text-white rounded-full">
+        <button className="min-w-40 px-6 py-3 bg-primary-500 text-white rounded-full">
           Masuk
         </button>
       </div>

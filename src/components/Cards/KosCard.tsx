@@ -23,15 +23,30 @@ export default function KosCard({ kos }: KosCardProps) {
 
     return (
         <Link href={`/kos/${slugify(kos_nama, kos_id)}`} className="cursor-pointer">
-            <div className="w-64">
-                <div className="w-full h-40 rounded-2xl bg-slate-300 relative">
+            <div className="w-full">
+                <div className="w-full h-40 rounded-2xl overflow-hidden bg-slate-300 relative">
                     <img
-                        src={gambar || "/placeholder.jpg"}
+                        src={gambar || "/assets/placeholder.jpg"}
                         alt={kos_nama}
-                        className="w-full h-full object-cover rounded-2xl"
+                        className="w-full h-full object-contain rounded-2xl z-10 relative"
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null; // Hindari infinite loop error
+                            target.src = "/assets/placeholder.jpg"; // Ganti dengan gambar default
+                        }}
+                    />
+                    <img
+                        src={gambar || "/assets/placeholder.jpg"}
+                        alt={kos_nama}
+                        className="w-full h-full  rounded-2xl absolute object-cover inset-0 blur-sm opacity-50 z-0"
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null; // Hindari infinite loop error
+                            target.src = "/assets/placeholder.jpg"; // Ganti dengan gambar default
+                        }}
                     />
                     {kos_premium && (
-                        <div className="absolute top-2 left-2 bg-rose-500 text-white text-xs px-2 py-1 rounded">
+                        <div className="absolute top-2 left-2 bg-rose-500 text-white text-xs px-2 py-1 rounded z-10">
                             Premium
                         </div>
                     )}
