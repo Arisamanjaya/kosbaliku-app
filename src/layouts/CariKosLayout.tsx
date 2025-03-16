@@ -4,7 +4,7 @@ import ListKos from '../components/CariKos/ListKos';
 import { useEffect, useState } from 'react';
 import { fetchKosList } from '../lib/api/fetchKosList';
 import { KosData } from '../types/kosData';
-import EmptyState from '../components/CariKos/components/EmptyState';
+import EmptyStateHandler from '../components/CariKos/components/EmptyStateHandler';
 
 export default function CariKosLayout() {
     const [kosList, setKosList] = useState<KosData[]>([]);
@@ -17,9 +17,24 @@ export default function CariKosLayout() {
         minPrice: 100000, // Default minimal harga
         maxPrice: 20000000, // Default harga maksimum
     });
-
+    
     // ✅ State untuk menghitung jumlah filter yang aktif
     const [filterCount, setFilterCount] = useState(0); 
+    
+    // Fungsi untuk memuat lebih banyak data
+    const handleLoadMore = () => {
+        if (hasMore) {
+            loadKos(true);
+        }
+    };
+
+    const handleFilterChange = (newFilters: typeof filters) => {
+        setFilters(newFilters); // ✅ Update state filters dengan data terbaru
+    };
+    const safeFilters = {
+        ...filters,
+        maxPrice: filters.maxPrice === Infinity ? Number.MAX_SAFE_INTEGER : filters.maxPrice,
+    };
 
     const handleResetFilter = () => {
         setFilters({
@@ -37,12 +52,23 @@ export default function CariKosLayout() {
     const loadKos = async (isLoadMore = false) => {
         setLoading(true);
         try {
-            const data = await fetchKosList({ page, limit: 10, ...filters });
-
+            const data = await fetchKosList({ page, limit: 10, ...safeFilters });
+    
+            console.log(`Fetching page: ${page}, Data fetched:`, data);
+    
             if (data.length === 0) {
                 setHasMore(false);
             } else {
-                setKosList((prev) => (isLoadMore ? [...prev, ...data] : data));
+                setKosList((prevKosList) => {
+                    const mergedList = [...prevKosList, ...data];
+                    // ✅ Filter duplikat berdasarkan `kos_id`
+                    const uniqueList = Array.from(new Map(mergedList.map(kos => [kos.kos_id, kos])).values());
+                    return uniqueList;
+                });
+    
+                if (isLoadMore) {
+                    setPage((prev) => prev + 1);
+                }
             }
         } catch (err: any) {
             setError(err.message || 'Gagal memuat data kos');
@@ -51,24 +77,21 @@ export default function CariKosLayout() {
         }
     };
 
+    useEffect(() => {
+        if (page > 1) {
+            loadKos(true);
+        }
+    }, [page]);
+
+
     // Fetch data awal saat pertama render atau saat filter berubah
     useEffect(() => {
-        setKosList([]); // ✅ Reset list kos agar tidak append data lama
+        setKosList([]); // Kosongkan data lama
         setPage(1);
-        setHasMore(true);
-        loadKos(false); // ✅ Fetch ulang dari database
+        loadKos(false);
     }, [filters]);
     
 
-    // Fungsi untuk memuat lebih banyak data
-    const handleLoadMore = () => {
-        setPage((prev) => prev + 1);
-        loadKos(true);
-    };
-
-    const handleFilterChange = (newFilters: typeof filters) => {
-        setFilters(newFilters); // ✅ Update state filters dengan data terbaru
-    };
 
     return (
         <GlobalLayout>
@@ -83,35 +106,34 @@ export default function CariKosLayout() {
 
 
         <div className="max-w-2xl overflow-y-auto bg-white">
-            {loading && page === 1 ? (
-                <p className="text-center text-gray-500">Memuat data kos...</p>
-            ) : error ? (
-                <p className="text-center text-red-500">{error}</p>
-            ) : kosList.length === 0 ? ( 
-                <EmptyState 
-                    message={filters.premium || filters.minPrice || filters.maxPrice
-                        ? "Tidak ada kos yang cocok dengan filter yang dipilih."
-                        : "Belum ada kos di lokasi ini. Coba cari di area lain!"
-                    } 
-                />
-            ) : (
-                <>
-                    <ListKos kosList={kosList} />
-                    {hasMore && !loading && (
-                        <div className="text-center flex justify-center pr-4 py-4">
-                            <button
-                                onClick={handleLoadMore}
-                                className="px-4 py-2 text-primary-500"
-                            >
-                                Muat Lebih Banyak
-                            </button>
-                        </div>
-                    )}
-                    {loading && page > 1 && (
-                        <p className="text-center text-gray-500">Memuat data tambahan...</p>
-                    )}
-                </>
-            )}
+        {loading && page === 1 ? (
+            <p className="text-center text-gray-500">Memuat data kos...</p>
+        ) : error ? (
+            <p className="text-center text-red-500">{error}</p>
+        ) : kosList.length === 0 && !hasMore ? ( 
+            <EmptyStateHandler 
+                isSearchEmpty={!filters.premium && filters.minPrice === 100000 && filters.maxPrice === Infinity}
+                isFilterEmpty={filters.premium || filters.minPrice > 100000 || filters.maxPrice < Infinity}
+                isHaversineEmpty={kosList.length === 0 && !hasMore}
+            />
+        ) : (
+            <>
+                <ListKos kosList={kosList} />
+                {hasMore && !loading && (
+                    <div className="text-center flex justify-center pr-4 py-4">
+                        <button
+                            onClick={handleLoadMore}
+                            className="px-4 py-2 text-primary-500"
+                        >
+                            Muat Lebih Banyak
+                        </button>
+                    </div>
+                )}
+                {loading && page > 1 && (
+                    <p className="text-center text-gray-500 px-4 py-2">Memuat data tambahan...</p>
+                )}
+            </>
+        )}
         </div>
         </GlobalLayout>
     );

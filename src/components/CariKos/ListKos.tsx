@@ -18,6 +18,7 @@ export default function ListKos({ kosList = [], onLoadMore, hasMore = false }: L
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
+                    console.log("Load More Triggered!");
                     onLoadMore();
                 }
             },
