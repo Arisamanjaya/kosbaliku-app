@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { IconArrowLeft, IconX, IconMapPin, IconHome } from "@tabler/icons-react";
+import { getLocationDetails } from "../lib/api/getLocationDetails";
 
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
 
@@ -100,9 +101,17 @@ const SearchPage = () => {
                         <div
                             key={place.place_id}
                             className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={() => {
+                            onClick={async () => {
                                 setSearchInput(place.description);
-                                router.push(`/cari?lokasi=${encodeURIComponent(place.description)}`);
+                                
+                                // 🔥 Ambil koordinat lokasi dari Google Places API
+                                const location = await getLocationDetails(place.place_id);
+                            
+                                if (location) {
+                                    router.push(`/cari?lokasi=${encodeURIComponent(place.description)}&lat=${location.lat}&lng=${location.lng}`);
+                                } else {
+                                    router.push(`/cari?lokasi=${encodeURIComponent(place.description)}`);
+                                }
                             }}
                         >
                             <IconMapPin className="text-slate-500" />
