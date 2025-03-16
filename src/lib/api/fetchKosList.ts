@@ -8,6 +8,8 @@ interface CariKosParams {
     fasilitas?: string[];
     page?: number;
     limit?: number;
+    premium?: boolean;
+    avail?: boolean;
 }
 
 export async function fetchKosList({
@@ -16,6 +18,7 @@ export async function fetchKosList({
     hargaMin = 0,
     hargaMax = 0,
     fasilitas = [],
+    premium = false,
     page = 1,
     limit = 10
 }: CariKosParams = {}) {
@@ -28,13 +31,18 @@ export async function fetchKosList({
             kos_id, 
             kos_nama, 
             kos_lokasi, 
-            kos_tipe, 
-            harga_kos:harga_kos(harga, tipe_durasi), 
-            kos_images:kos_images(url_foto),
-            kos_fasilitas:kos_fasilitas(fasilitas(fasilitas_nama))
+            kos_avail, 
+            kos_premium, 
+            kos_tipe,
+            kos_fasilitas(fasilitas(fasilitas_nama)),
+            harga_kos(harga, tipe_durasi),
+            kos_images(url_foto)
         `)
         .range(start, end)
         .throwOnError();
+
+    // 🔥 Tambahkan filter premium jika aktif
+    if (premium) query = query.eq('kos_premium', true);
 
     // Filter berdasarkan tipe kos (jika dipilih)
     if (tipe) query = query.eq('kos_tipe', tipe);
@@ -69,14 +77,16 @@ export async function fetchKosList({
     return filteredData.map((kos: any) => {
         const hargaKos = kos.harga_kos?.[0]; // Jangan beri default { harga: 0 }
         return {
-            kos_id: kos.kos_id,
-            kos_nama: kos.kos_nama,
-            kos_lokasi: kos.kos_lokasi,
-            kos_tipe: kos.kos_tipe,
-            harga: hargaKos ?. harga ?? 0, // Gunakan null jika tidak ada harga
-            durasi: hargaKos ? hargaKos.tipe_durasi : 'bulan',
-            gambar: kos.kos_images?.[0]?.url_foto || '/placeholder.jpg',
-            fasilitas: kos.kos_fasilitas?.map((f: any) => f.fasilitas.fasilitas_nama) ?? []
+        kos_id: kos.kos_id,
+        kos_nama: kos.kos_nama,
+        kos_lokasi: kos.kos_lokasi,
+        kos_avail: kos.kos_avail,
+        kos_premium: kos.kos_premium,
+        kos_tipe: kos.kos_tipe,
+        fasilitas: kos.kos_fasilitas?.map((f: any) => f.fasilitas.fasilitas_nama) || [],
+        harga: kos.harga_kos?.[0]?.harga || 0,
+        durasi: kos.harga_kos?.[0]?.tipe_durasi || "bulan",
+        gambar: kos.kos_images?.[0]?.url_foto || "/placeholder.jpg",
         };
     });    
 }

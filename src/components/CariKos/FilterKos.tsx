@@ -68,7 +68,8 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
 
     const handleResetFilters = () => {
         setFilterCount(0);
-        onResetFilter(); // ✅ Panggil reset di parent
+        onFilterChange({ premium: false, minPrice: 100000, maxPrice: 999999999 });
+        onResetFilter();
     };
 
     return (
@@ -107,7 +108,12 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
 
                     {/* Premium Button */}
                     <button
-                        onClick={() => setIsPremium(!isPremium)}
+                        onClick={() => {
+                            const newPremium = !isPremium;
+                            setIsPremium(newPremium);
+                            const updatedFilters = { ...filters, premium: newPremium };
+                            onFilterChange(updatedFilters);
+                        }}
                         className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
                             isPremium ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
                         }`}
