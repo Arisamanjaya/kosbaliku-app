@@ -2,7 +2,7 @@ import GlobalLayout from './GlobalLayout';
 import FilterKos from '../components/CariKos/FilterKos';
 import ListKos from '../components/CariKos/ListKos';
 import { useEffect, useState } from 'react';
-import { fetchKosList } from '../lib/api/apiCariKos';
+import { fetchKosList } from '../lib/api/fetchKosList';
 import { KosData } from '../types/kosData';
 import EmptyState from '../components/CariKos/components/EmptyState';
 
@@ -15,7 +15,7 @@ export default function CariKosLayout() {
     const [filters, setFilters] = useState({
         premium: false,
         minPrice: 100000, // Default minimal harga
-        maxPrice: Infinity, // Default harga maksimum
+        maxPrice: 20000000, // Default harga maksimum
     });
 
     // ✅ State untuk menghitung jumlah filter yang aktif
@@ -25,7 +25,7 @@ export default function CariKosLayout() {
         setFilters({
             premium: false,
             minPrice: 100000, // Set ulang ke default
-            maxPrice: Infinity,
+            maxPrice: 20000000,
         });
         setFilterCount(0);
         setPage(1);

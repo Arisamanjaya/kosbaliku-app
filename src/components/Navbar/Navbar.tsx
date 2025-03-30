@@ -18,12 +18,17 @@ function SearchBar({ onClick }: { onClick: () => void }) {
 }
 
 function MenuLinks() {
-  const menus = ["Beranda", "Cari Kos", "Tentang Kami", "Blog"];
+  const menus = [
+    { name: "Beranda", path: "/" },
+    { name: "Cari Kos", path: "/carikos" },
+    { name: "Tentang Kami", path: "/tentang-kami" },
+    { name: "Blog", path: "/blog" }
+  ];
   return (
     <ul className="hidden lg:flex gap-6 text-sm font-normal text-slate-500">
       {menus.map((menu, index) => (
         <li key={index}>
-          <a href="#" className="hover:text-primary-500 transition-colors">{menu}</a>
+          <a href={menu.path} className="hover:text-primary-500 transition-colors">{menu.name}</a>
         </li>
       ))}
     </ul>
@@ -40,7 +45,12 @@ function AuthButtons() {
 }
 
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-  const menus = ["Beranda", "Cari Kos", "Tentang Kami", "Blog"];
+  const menus = [
+    { name: "Beranda", path: "/" },
+    { name: "Cari Kos", path: "/carikos" },
+    { name: "Tentang Kami", path: "/tentang-kami" },
+    { name: "Blog", path: "/blog" }
+  ];
   return (
     <div className={`fixed flex-col flex top-0 right-0 h-screen w-3/4 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:hidden ${
       isOpen ? "translate-x-0" : "translate-x-full hidden"}`}>
@@ -52,7 +62,10 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       <ul className="flex flex-col items-center gap-6 text-lg font-medium text-primary-500">
         {menus.map((menu, index) => (
           <li key={index}>
-            <a href="#" className="hover:text-primary-700 transition-colors">{menu}</a>
+            <a href={menu.path}
+            className="hover:text-primary-700 transition-colors">
+              {menu.name}
+            </a>
           </li>
         ))}
       </ul>

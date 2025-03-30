@@ -44,14 +44,14 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     <div className={`fixed flex-col flex top-0 right-0 h-screen w-3/4 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:hidden ${
         isOpen ? "translate-x-0 opacity-100 pointer-events-auto" : "translate-x-full hidden"}`}>
         <div className="flex justify-end p-4">
-        <button onClick={onClose}>
-            <IconX size={30} />
-        </button>
+          <button onClick={onClose}>
+              <IconX size={30} />
+          </button>
         </div>
         <ul className="flex flex-col items-center gap-6 text-lg font-medium text-primary-500">
-        {menus.map((menu, index) => (
+          {menus.map((menu, index) => (
             <li key={index}>
-            <a href="#" className="hover:text-primary-700 transition-colors">{menu}</a>
+              <a href="#" className="hover:text-primary-700 transition-colors">{menu}</a>
             </li>
         ))}
         </ul>
