@@ -12,7 +12,7 @@ interface CariKosParams {
     avail?: boolean;
 }
 
-export async function fetchKosList({
+export async function fetchKosList ({
     tipe = '',
     durasi = '',
     hargaMin = 0,
