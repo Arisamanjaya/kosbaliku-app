@@ -1,7 +1,7 @@
 import { IconInfoCircle } from "@tabler/icons-react";
 
 export default function PeraturanKos({ kos }: { kos: any }) {
-    console.log("📌 Data Peraturan Kos:", kos.kos_rule); // Debugging
+    // console.log("📌 Data Peraturan Kos:", kos.kos_rule); // Debugging
 
     const peraturanList = kos.kos_rule
         ? Array.isArray(kos.kos_rule)

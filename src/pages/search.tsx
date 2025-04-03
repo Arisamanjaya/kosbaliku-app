@@ -3,7 +3,7 @@ import { useRouter } from "next/router";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { IconArrowLeft, IconX, IconMapPin, IconHome } from "@tabler/icons-react";
 import { getLocationDetails } from "../lib/api/getLocationDetails";
-
+import { slugify } from "../utils/slugify";
 const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
 
 type Kos = {
@@ -71,6 +71,7 @@ const SearchPage = () => {
     const handleSearchSubmit = () => {
         router.push(`/cari?lokasi=${encodeURIComponent(searchInput)}`);
     };
+    
 
     return (
         <div className="min-h-screen bg-white max-w-2xl mx-auto">
@@ -103,14 +104,14 @@ const SearchPage = () => {
                             className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
                             onClick={async () => {
                                 setSearchInput(place.description);
-                                
-                                // 🔥 Ambil koordinat lokasi dari Google Places API
-                                const location = await getLocationDetails(place.place_id);
                             
+                                // Get coordinates from Google Places API
+                                const location = await getLocationDetails(place.place_id);
+                                console.log('Location:', location); // Debug the location object
                                 if (location) {
-                                    router.push(`/cari?lokasi=${encodeURIComponent(place.description)}&lat=${location.lat}&lng=${location.lng}`);
+                                    router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}&lat=${location.lat}&lng=${location.lng}`);
                                 } else {
-                                    router.push(`/cari?lokasi=${encodeURIComponent(place.description)}`);
+                                    router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
                                 }
                             }}
                         >
@@ -131,8 +132,9 @@ const SearchPage = () => {
                         key={kos.kos_id}
                         className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
                         onClick={() => {
-                            setSearchInput(kos.kos_nama);
-                            router.push(`/cari?lokasi=${encodeURIComponent(kos.kos_nama)}`);
+                            const kosSlug = slugify(kos.kos_nama, `${kos.kos_id}`);
+                            router.push(`/kos/${kosSlug}`);
+                            // Notice the path is now /kos/ instead of /detail-kos/
                         }}
                     >   
                         <IconHome className="text-slate-500" />

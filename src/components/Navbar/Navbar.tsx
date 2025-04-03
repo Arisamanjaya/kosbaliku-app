@@ -101,7 +101,9 @@ export default function Navbar() {
       isScrolled ? "bg-white shadow-md backdrop-blur-md" : "bg-white bg-opacity-80 backdrop-blur-sm"}`}>
       <div className="container mx-auto flex items-center justify-between max-w-7xl py-4">
         {/* Logo */}
-        <h1 className="text-2xl font-semibold text-primary-500">KosBaliku</h1>
+        <a href="/">
+          <h1 className="text-2xl font-semibold text-primary-500">KosBaliku</h1>
+        </a>
 
         {/* Search Bar */}
         {isScrolled && <SearchBar onClick={() => router.push("/search")} />}

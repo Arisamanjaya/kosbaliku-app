@@ -1,49 +1,26 @@
 import KosCard from '../Cards/KosCard';
 import KosCardMobile from '../Cards/KosCardMobile';
 import { KosData } from '../../types/kosData';
-import { useEffect, useRef } from 'react';
 
 interface ListKosProps {
     kosList?: KosData[];
-    onLoadMore?: () => void; // Fungsi ambil data lebih banyak
-    hasMore?: boolean; // Apakah masih ada data yang bisa di-load
+    onLoadMore?: () => void; 
+    hasMore?: boolean;
+    loading?: boolean;
 }
 
-export default function ListKos({ kosList = [], onLoadMore, hasMore = false }: ListKosProps) {
-    const loadMoreRef = useRef<HTMLDivElement>(null);
+export default function ListKos({ kosList = [], onLoadMore, hasMore = false, loading = false }: ListKosProps) {
+    console.log('kosList in ListKos:', kosList);
 
-    useEffect(() => {
-        if (!onLoadMore) return; // Kalau nggak ada fungsi load more, langsung stop
-
-        const observer = new IntersectionObserver(
-            ([entry]) => {
-                if (entry.isIntersecting) {
-                    console.log("Load More Triggered!");
-                    onLoadMore();
-                }
-            },
-            { threshold: 1.0 }
-        );
-
-        if (loadMoreRef.current) {
-            observer.observe(loadMoreRef.current);
-        }
-
-        return () => {
-            if (loadMoreRef.current) {
-                observer.unobserve(loadMoreRef.current);
-            }
-        };
-    }, [onLoadMore]);
+    if (!kosList || kosList.length === 0) {
+        return <p className="text-center text-gray-500">Tidak ada kos ditemukan.</p>;
+    }
 
     return (
         <div className="w-full max-w-3xl px-6 md:px-8 lg:px-10 py-3">
-            {/* Grid Container */}
             <div className="grid grid-cols-2 gap-4">
-                {kosList
-                .filter((kos) => kos.harga > 0)
-                .map((kos) => (
-                    <div key={kos.kos_id} className="w-full">
+                {kosList.map((kos) => (
+                    <div key={`${kos.kos_id}-${kos.kos_nama}`} className="w-full">
                         <div className="hidden md:block w-full max-w-[50vw]">
                             <KosCard kos={kos} />
                         </div>
@@ -54,18 +31,14 @@ export default function ListKos({ kosList = [], onLoadMore, hasMore = false }: L
                 ))}
             </div>
 
-            {/* Kalau kosong */}
-            {kosList.length === 0 && (
-                <div className="text-center py-10 text-gray-500">
-                    Tidak ada kos ditemukan.
-                </div>
-            )}
-
-            {/* Load More Section */}
             {hasMore && (
-                <div ref={loadMoreRef} className="text-center py-4 text-primary-600 cursor-pointer">
-                    Memuat lebih banyak...
-                </div>
+                <button 
+                    onClick={onLoadMore}
+                    disabled={loading}
+                    className="w-full text-center py-4 text-primary-600 hover:text-primary-700 disabled:text-gray-400 cursor-pointer disabled:cursor-not-allowed"
+                >
+                    {loading ? "Sedang memuat..." : "Muat lebih banyak"}
+                </button>
             )}
         </div>
     );

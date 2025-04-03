@@ -3,14 +3,14 @@ import { IconMapPin } from "@tabler/icons-react";
 interface LokasiKosProps {
     kos: {
         kos_alamat: string;
-        kos_longitude: number;
-        kos_latitude: number;
+        kos_lng: number;
+        kos_lat: number;
     };
     }
 
     export default function LokasiKos({ kos }: LokasiKosProps) {
     const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
-    const googleMapsUrl = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${kos.kos_latitude},${kos.kos_longitude}&zoom=15`;
+    const googleMapsUrl = `https://www.google.com/maps/embed/v1/place?key=${apiKey}&q=${kos.kos_lat},${kos.kos_lng}&zoom=15`;
 
     return (
         <div className="y-2">

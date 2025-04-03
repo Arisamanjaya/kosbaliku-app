@@ -10,4 +10,6 @@ export interface KosData {
     harga: number;
     durasi: string;
     gambar: string;
+    kos_lat: number;
+    kos_lng: number;
 }  

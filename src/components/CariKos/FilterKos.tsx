@@ -26,7 +26,7 @@ interface FilterKosProps {
 }
 
 export default function FilterKos({ filterCount, setFilterCount, onFilterChange, onResetFilter, filters}: FilterKosProps) {
-    const [isPremium, setIsPremium] = useState(true);
+    const [isPremium, setIsPremium] = useState(false);
     const [sortOption, setSortOption] = useState("Rekomen");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);

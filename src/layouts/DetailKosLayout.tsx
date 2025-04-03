@@ -32,7 +32,7 @@ export default function DetailKosLayout({ kos }: { kos: any }) {
             <CardPemilik kos={kos} />
             </div>
         </div>
-        <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white shadow-lg px-6 md:px-8">
+        <div className="lg:hidden fixed bottom-0 left-0 w-full bg-white drop-shadow-2xl px-6 md:px-8">
             <div className="py-6 flex-col flex gap-6">
                 <div className="flex flex-col gap-2">
                     <h5 className="text-xl font-semibold text-slate-800">

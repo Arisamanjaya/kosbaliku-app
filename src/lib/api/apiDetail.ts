@@ -16,8 +16,8 @@ export async function fetchKosDetail(kosId: string) {
             kos_rule,
             kos_note,
             kos_alamat,
-            kos_longitude,
-            kos_latitude
+            kos_lng,
+            kos_lat
         `)
         .eq("kos_id", kosId)
         .single();

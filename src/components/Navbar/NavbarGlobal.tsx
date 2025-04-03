@@ -17,12 +17,17 @@ function SearchBar({ onClick }: { onClick: () => void }) {
 }
 
 function MenuLinks() {
-  const menus = ["Beranda", "Cari Kos", "Tentang Kami", "Blog"];
+  const menus = [
+    { name: "Beranda", path: "/" },
+    { name: "Cari Kos", path: "/carikos" },
+    { name: "Tentang Kami", path: "/tentang-kami" },
+    { name: "Blog", path: "/blog" }
+  ];
   return (
     <ul className="hidden lg:flex gap-6 text-sm font-normal text-slate-500">
       {menus.map((menu, index) => (
         <li key={index}>
-          <a href="#" className="hover:text-primary-500 transition-colors">{menu}</a>
+          <a href={menu.path} className="hover:text-primary-500 transition-colors">{menu.name}</a>
         </li>
       ))}
     </ul>
@@ -39,22 +44,30 @@ function AuthButtons() {
 }
 
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
-    const menus = ["Beranda", "Cari Kos", "Tentang Kami", "Blog"];
-    return (
+  const menus = [
+    { name: "Beranda", path: "/" },
+    { name: "Cari Kos", path: "/carikos" },
+    { name: "Tentang Kami", path: "/tentang-kami" },
+    { name: "Blog", path: "/blog" }
+  ];
+  return (
     <div className={`fixed flex-col flex top-0 right-0 h-screen w-3/4 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:hidden ${
-        isOpen ? "translate-x-0 opacity-100 pointer-events-auto" : "translate-x-full hidden"}`}>
-        <div className="flex justify-end p-4">
-          <button onClick={onClose}>
-              <IconX size={30} />
-          </button>
-        </div>
-        <ul className="flex flex-col items-center gap-6 text-lg font-medium text-primary-500">
-          {menus.map((menu, index) => (
-            <li key={index}>
-              <a href="#" className="hover:text-primary-700 transition-colors">{menu}</a>
-            </li>
+      isOpen ? "translate-x-0" : "translate-x-full hidden"}`}>
+      <div className="flex justify-end p-4">
+        <button onClick={onClose}>
+          <IconX size={30} />
+        </button>
+      </div>
+      <ul className="flex flex-col items-center gap-6 text-lg font-medium text-primary-500">
+        {menus.map((menu, index) => (
+          <li key={index}>
+            <a href={menu.path}
+            className="hover:text-primary-700 transition-colors">
+              {menu.name}
+            </a>
+          </li>
         ))}
-        </ul>
+      </ul>
         <hr className="w-2/3 border-slate-300 my-4 mx-auto" />
         <div className="flex flex-col items-center gap-3">
         <button className="min-w-40 px-6 py-3 border border-primary-500 rounded-full text-primary-500">
@@ -98,7 +111,9 @@ export default function NavbarGlobal() {
       isScrolled ? "bg-white shadow-sm backdrop-blur-md" : "bg-white bg-opacity-80 backdrop-blur-sm shadow-sm"}`}>
       <div className="container mx-auto flex items-center justify-between max-w-7xl py-4">
         {/* Logo */}
-        <h1 className="text-2xl font-semibold text-primary-500">KosBaliku</h1>
+        <a href="/">
+          <h1 className="text-2xl font-semibold text-primary-500">KosBaliku</h1>
+        </a>
 
         {/* Search Bar */}
         <SearchBar onClick={() => router.push("/search")} />
