@@ -16,7 +16,7 @@ export default function BaseLayout({ children }: LayoutProps) {
             <main className="">{children}</main>
 
         {/* Footer */}
-            <Footer />
+            {/* <Footer /> */}
         </div>
     );
 }

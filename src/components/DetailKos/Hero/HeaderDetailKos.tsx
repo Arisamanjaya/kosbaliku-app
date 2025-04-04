@@ -12,7 +12,7 @@ export default function HeaderDetailKos({ kos }: { kos: any }) {
     const carouselRef = useRef<HTMLDivElement>(null);
     const thumbnailRef = useRef<HTMLDivElement>(null);
 
-    const images = kos.kos_images?.map((img: any) => img.url_foto) || ["/placeholder.jpg"];
+    const images = kos.kos_images?.map((img: any) => img.url_foto) || ["/assets/placeholder.jpg"];
 
     const handleSlideChange = (index: number) => {
         setPhotoIndex(index);

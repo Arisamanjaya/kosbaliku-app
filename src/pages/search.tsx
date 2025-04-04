@@ -16,35 +16,85 @@ const SearchPage = () => {
     const [searchInput, setSearchInput] = useState("");
     const [suggestedKos, setSuggestedKos] = useState<Kos[]>([]);
     const [placeSuggestions, setPlaceSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+    const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
+    const [autocompleteService, setAutocompleteService] = useState<google.maps.places.AutocompleteService | null>(null);
 
     const router = useRouter();
 
-    const { isLoaded } = useJsApiLoader({
+    const { isLoaded, loadError } = useJsApiLoader({
         googleMapsApiKey: GOOGLE_MAPS_API_KEY,
         libraries: ["places"],
+        version: "weekly",
+        language: "id",
     });
 
+    // Initialize Google Maps services
     useEffect(() => {
-        if (!isLoaded || !searchInput.trim()) {
+        if (isLoaded && !autocompleteService && window.google?.maps?.places) {
+            setAutocompleteService(new window.google.maps.places.AutocompleteService());
+        }
+    }, [isLoaded, autocompleteService]);
+
+    // Handle place suggestions
+    useEffect(() => {
+        if (!searchInput.trim() || !autocompleteService) {
             setPlaceSuggestions([]);
             return;
         }
-    
-        const service = new google.maps.places.AutocompleteService();
-        const baliCenter = { lat: -8.4095, lng: 115.1889 };
-    
-        service.getPlacePredictions(
-            {
-                input: searchInput,
-                location: new google.maps.LatLng(baliCenter.lat, baliCenter.lng),
-                radius: 75000, // Sekitar Bali
-                componentRestrictions: { country: "ID" }
-            },
-            (predictions) => {
-                setPlaceSuggestions(predictions || []);
+
+        const fetchPlaceSuggestions = async () => {
+            setIsLoadingPlaces(true);
+            try {
+                const baliCenter = { lat: -8.4095, lng: 115.1889 };
+                
+                const request = {
+                    input: searchInput,
+                    location: new google.maps.LatLng(baliCenter),
+                    radius: 75000, // 75km radius
+                    componentRestrictions: { country: "ID" }
+                };
+
+                const result = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve, reject) => {
+                    autocompleteService.getPlacePredictions(
+                        request,
+                        (predictions, status) => {
+                            if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+                                resolve(predictions);
+                            } else {
+                                resolve([]);
+                            }
+                        }
+                    );
+                });
+
+                setPlaceSuggestions(result);
+            } catch (error) {
+                console.error('Error fetching suggestions:', error);
+                setPlaceSuggestions([]);
+            } finally {
+                setIsLoadingPlaces(false);
             }
-        );
-    }, [searchInput, isLoaded]);
+        };
+
+        // Debounce the API call
+        const timeoutId = setTimeout(fetchPlaceSuggestions, 300);
+        return () => clearTimeout(timeoutId);
+
+    }, [searchInput, autocompleteService]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            setAutocompleteService(null);
+            setPlaceSuggestions([]);
+        };
+    }, []);
+
+    // Show loading or error states
+    if (loadError) {
+        console.error('Error loading Google Maps:', loadError);
+        return <div>Error loading Google Maps</div>;
+    }
     
 
     // Fetch suggested kos dari Supabase
@@ -72,6 +122,16 @@ const SearchPage = () => {
         router.push(`/cari?lokasi=${encodeURIComponent(searchInput)}`);
     };
     
+    // Add this after your state declarations
+    useEffect(() => {
+        console.log('Search State:', {
+            isLoaded,
+            hasAutocomplete: !!autocompleteService,
+            inputLength: searchInput.length,
+            suggestionsCount: placeSuggestions.length,
+            isLoading: isLoadingPlaces
+        });
+    }, [isLoaded, autocompleteService, searchInput, placeSuggestions, isLoadingPlaces]);
 
     return (
         <div className="min-h-screen bg-white max-w-2xl mx-auto">
@@ -98,6 +158,7 @@ const SearchPage = () => {
             {/* Google Maps Suggestions (Styled like suggestedKos) */}
             {placeSuggestions.length > 0 && (
                 <div className="p-4 space-y-2 border-b">
+                    Lokasi Terkait
                     {placeSuggestions.map((place) => (
                         <div
                             key={place.place_id}
@@ -127,6 +188,7 @@ const SearchPage = () => {
 
             {/* Suggested Kos dari Supabase */}
             <div className="p-4 space-y-2">
+                Kos Terkait
                 {suggestedKos.map((kos) => (
                     <div
                         key={kos.kos_id}

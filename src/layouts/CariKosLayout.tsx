@@ -6,6 +6,7 @@ import { fetchKosList } from '../lib/api/fetchKosList';
 import { KosData } from '../types/kosData';
 import EmptyStateHandler from '../components/CariKos/components/EmptyStateHandler';
 import { useRouter } from 'next/router';
+import MapKos from '../components/CariKos/MapKos';
 
 const DEFAULT_LAT = -8.670458; // Denpasar, Bali latitude
 const DEFAULT_LNG = 115.212629; // Denpasar, Bali longitude
@@ -18,6 +19,7 @@ export default function CariKosLayout() {
     const [hasMore, setHasMore] = useState(true);
     const [filterCount, setFilterCount] = useState(0);
     const isFirstLoad = useRef(true);
+    const [isMapLoading, setIsMapLoading] = useState(true);
     const [filters, setFilters] = useState({
         premium: false,
         minPrice: 100000,
@@ -181,41 +183,62 @@ export default function CariKosLayout() {
 
     return (
         <GlobalLayout>
-            <FilterKos 
-                filterCount={filterCount}  
-                setFilterCount={setFilterCount}  
-                filters={filters}  
-                setFilters={setFilters}  
-                onResetFilter={handleResetFilter}  
-                onFilterChange={handleFilterChange}
-            />
-            <div className="max-w-2xl overflow-y-auto bg-white h-screen">
-                {error ? (
-                    <p className="text-center text-red-500 p-4">{error}</p>
-                ) : loading && page === 1 ? (
-                    <div className="text-center p-4">
-                        <p className="text-gray-500">Memuat data kos...</p>
-                        <p className="text-sm text-gray-400">Mohon tunggu sebentar</p>
-                    </div>
-                ) : kosList.length === 0 && !hasMore ? ( 
-                    <EmptyStateHandler 
+            <div className="flex mx-auto w-full h-screen bg-slate-200">
+                <div className="max-w-2xl overflow-y-auto bg-white h-screen">
+                    <FilterKos 
+                        filterCount={filterCount}  
+                        setFilterCount={setFilterCount}  
+                        filters={filters}  
+                        setFilters={setFilters}  
+                        onResetFilter={handleResetFilter}  
+                        onFilterChange={handleFilterChange}
+                    />
+                    {error ? (
+                        <p className="text-center text-red-500 p-4">{error}</p>
+                    ) : loading && page === 1 ? (
+                        <div className="text-center p-4">
+                            <p className="text-gray-500">Memuat data kos...</p>
+                            <p className="text-sm text-gray-400">Mohon tunggu sebentar</p>
+                        </div>
+                    ) : kosList.length === 0 && !hasMore ? ( 
+                        <EmptyStateHandler 
                         isSearchEmpty={!filters.premium && filters.minPrice === 100000 && filters.maxPrice === 20000000}
                         isFilterEmpty={filters.premium || filters.minPrice > 100000 || filters.maxPrice < 20000000}
                         isHaversineEmpty={kosList.length === 0 && !hasMore}
-                    />
-                ) : (
-                    <>
-                        <ListKos 
-                            kosList={kosList} 
-                            onLoadMore={handleLoadMore} 
-                            hasMore={hasMore}
-                            loading={loading}
                         />
-                        {loading && page > 1 && (
-                            <p className="text-center text-gray-500 py-2">Memuat data tambahan...</p>
-                        )}
-                    </>
-                )}
+                    ) : (
+                        <>
+                            <ListKos 
+                                kosList={kosList} 
+                                onLoadMore={handleLoadMore} 
+                                hasMore={hasMore}
+                                loading={loading}
+                                />
+                            {loading && page > 1 && (
+                                <p className="text-center text-gray-500 py-2">Memuat data tambahan...</p>
+                            )}
+                        </>
+                    )}
+                </div>
+                {/* Map Section */}
+                <div className="w-3/4 h-screen sticky top-0">
+                    {isMapLoading && (
+                        <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                            <div className="text-gray-500">Loading map...</div>
+                        </div>
+                    )}
+                    <MapKos
+                        kosList={kosList}
+                        center={{
+                            lat: parseFloat(lat as string) || DEFAULT_LAT,
+                            lng: parseFloat(lng as string) || DEFAULT_LNG
+                        }}
+                        onMarkerClick={(kos) => {
+                            console.log('Kos clicked:', kos);
+                        }}
+                        onLoad={() => setIsMapLoading(false)}
+                    />
+                </div>
             </div>
         </GlobalLayout>
     );
