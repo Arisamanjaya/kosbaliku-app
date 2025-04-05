@@ -1,10 +1,10 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useJsApiLoader } from "@react-google-maps/api";
 import { IconArrowLeft, IconX, IconMapPin, IconHome } from "@tabler/icons-react";
 import { getLocationDetails } from "../lib/api/getLocationDetails";
 import { slugify } from "../utils/slugify";
-const GOOGLE_MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY as string;
+import { googleMapsApiOptions } from "../utils/googleMapsConfig";
 
 type Kos = {
     kos_id: number;
@@ -18,22 +18,19 @@ const SearchPage = () => {
     const [placeSuggestions, setPlaceSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
     const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
     const [autocompleteService, setAutocompleteService] = useState<google.maps.places.AutocompleteService | null>(null);
+    const mapServicesReady = useRef(false);
 
     const router = useRouter();
 
-    const { isLoaded, loadError } = useJsApiLoader({
-        googleMapsApiKey: GOOGLE_MAPS_API_KEY,
-        libraries: ["places"],
-        version: "weekly",
-        language: "id",
-    });
+    const { isLoaded, loadError } = useJsApiLoader(googleMapsApiOptions);
 
-    // Initialize Google Maps services
+    // Initialize Google Maps services only once when loaded
     useEffect(() => {
-        if (isLoaded && !autocompleteService && window.google?.maps?.places) {
+        if (isLoaded && !mapServicesReady.current && window.google?.maps?.places) {
             setAutocompleteService(new window.google.maps.places.AutocompleteService());
+            mapServicesReady.current = true;
         }
-    }, [isLoaded, autocompleteService]);
+    }, [isLoaded]);
 
     // Handle place suggestions
     useEffect(() => {
@@ -54,24 +51,20 @@ const SearchPage = () => {
                     componentRestrictions: { country: "ID" }
                 };
 
-                const result = await new Promise<google.maps.places.AutocompletePrediction[]>((resolve, reject) => {
-                    autocompleteService.getPlacePredictions(
-                        request,
-                        (predictions, status) => {
-                            if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
-                                resolve(predictions);
-                            } else {
-                                resolve([]);
-                            }
+                autocompleteService.getPlacePredictions(
+                    request,
+                    (predictions, status) => {
+                        if (status === google.maps.places.PlacesServiceStatus.OK && predictions) {
+                            setPlaceSuggestions(predictions);
+                        } else {
+                            setPlaceSuggestions([]);
                         }
-                    );
-                });
-
-                setPlaceSuggestions(result);
+                        setIsLoadingPlaces(false);
+                    }
+                );
             } catch (error) {
                 console.error('Error fetching suggestions:', error);
                 setPlaceSuggestions([]);
-            } finally {
                 setIsLoadingPlaces(false);
             }
         };
@@ -81,6 +74,32 @@ const SearchPage = () => {
         return () => clearTimeout(timeoutId);
 
     }, [searchInput, autocompleteService]);
+
+    // Handle location selection
+    const handlePlaceSelection = async (place: google.maps.places.AutocompletePrediction) => {
+        try {
+            setSearchInput(place.description);
+            
+            // Get coordinates from Google Places API
+            if (!isLoaded) {
+                console.error('Google Maps API not loaded');
+                router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
+                return;
+            }
+            
+            const location = await getLocationDetails(place.place_id);
+            console.log('Location:', location); // Debug
+            
+            if (location) {
+                router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}&lat=${location.lat}&lng=${location.lng}`);
+            } else {
+                router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
+            }
+        } catch (error) {
+            console.error('Error handling place selection:', error);
+            router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
+        }
+    };
 
     // Cleanup on unmount
     useEffect(() => {
@@ -163,18 +182,7 @@ const SearchPage = () => {
                         <div
                             key={place.place_id}
                             className="flex items-center gap-3 p-2 hover:bg-gray-100 cursor-pointer"
-                            onClick={async () => {
-                                setSearchInput(place.description);
-                            
-                                // Get coordinates from Google Places API
-                                const location = await getLocationDetails(place.place_id);
-                                console.log('Location:', location); // Debug the location object
-                                if (location) {
-                                    router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}&lat=${location.lat}&lng=${location.lng}`);
-                                } else {
-                                    router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
-                                }
-                            }}
+                            onClick={() => handlePlaceSelection(place)}
                         >
                             <IconMapPin className="text-slate-500" />
                             <div>
@@ -188,7 +196,6 @@ const SearchPage = () => {
 
             {/* Suggested Kos dari Supabase */}
             <div className="p-4 space-y-2">
-                Kos Terkait
                 {suggestedKos.map((kos) => (
                     <div
                         key={kos.kos_id}

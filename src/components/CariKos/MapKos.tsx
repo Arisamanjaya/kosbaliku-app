@@ -1,8 +1,8 @@
-
 import { useCallback, useState } from 'react';
-import { GoogleMap, LoadScript, InfoWindow, OverlayView, useJsApiLoader } from '@react-google-maps/api';
+import { GoogleMap, InfoWindow, OverlayView, useJsApiLoader } from '@react-google-maps/api';
 import { KosData } from '../../types/kosData';
 import CustomMarker from './components/customMarker';
+import { googleMapsApiOptions } from '@/src/utils/googleMapsConfig';
 
 interface MapKosProps {
     kosList: KosData[];
@@ -11,14 +11,11 @@ interface MapKosProps {
         lng: number;
     };
     onMarkerClick?: (kos: KosData) => void;
-    onLoad?: () => void; // Add the onLoad property
+    onLoad?: () => void;
 }
 
 const MapKos = ({ kosList, center, onMarkerClick, onLoad }: MapKosProps) => {
-    const { isLoaded } = useJsApiLoader({
-        googleMapsApiKey: process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!,
-        libraries: ["places"]
-    });
+    const { isLoaded } = useJsApiLoader(googleMapsApiOptions);
 
     const [map, setMap] = useState<google.maps.Map | null>(null);
     const [selectedKos, setSelectedKos] = useState<KosData | null>(null);
@@ -39,7 +36,6 @@ const MapKos = ({ kosList, center, onMarkerClick, onLoad }: MapKosProps) => {
         setSelectedKos(null);
     }, []);
 
-    // Move the loading check after all hooks are declared
     if (!isLoaded) {
         return (
             <div className="w-full h-full flex items-center justify-center bg-gray-100">
@@ -49,52 +45,51 @@ const MapKos = ({ kosList, center, onMarkerClick, onLoad }: MapKosProps) => {
     }
 
     return (
-        <LoadScript googleMapsApiKey={process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY!}>
-            <GoogleMap
-                mapContainerStyle={mapStyles}
-                zoom={13}
-                center={center}
-                onLoad={map => {
-                    setMap(map);
-                    if (onLoad) onLoad();
-                }}
-                options={{
-                    zoomControl: true,
-                    streetViewControl: true,
-                    mapTypeControl: true,
-                    fullscreenControl: true,
-                    styles: [
-                        {
-                            featureType: "poi",
-                            elementType: "labels",
-                            stylers: [{ visibility: "off" }]
-                        }
-                    ]
-                }}
-            >
-                {kosList.map((kos) => (
-                    <OverlayView
-                        key={kos.kos_id}
-                        position={{
-                            lat: kos.kos_lat,
-                            lng: kos.kos_lng
-                        }}
-                        mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+        <GoogleMap
+            mapContainerStyle={mapStyles}
+            zoom={13}
+            center={center}
+            onLoad={map => {
+                setMap(map);
+                if (onLoad) onLoad();
+            }}
+            options={{
+                zoomControl: true,
+                streetViewControl: true,
+                mapTypeControl: true,
+                fullscreenControl: true,
+                styles: [
+                    {
+                        featureType: "poi",
+                        elementType: "labels",
+                        stylers: [{ visibility: "off" }]
+                    }
+                ]
+            }}
+        >
+            {kosList.map((kos) => (
+                <OverlayView
+                    key={kos.kos_id}
+                    position={{
+                        lat: kos.kos_lat,
+                        lng: kos.kos_lng
+                    }}
+                    mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
+                >
+                    <div 
+                        onClick={() => handleMarkerClick(kos)}
+                        className="cursor-pointer transform -translate-x-1/2 -translate-y-full"
                     >
-                        <div 
-                            onClick={() => handleMarkerClick(kos)}
-                            className="cursor-pointer transform -translate-x-1/2 -translate-y-full"
-                        >
-                            <CustomMarker 
-                                price={kos.harga} 
-                                isPremium={kos.kos_premium}
-                            />
-                        </div>
-                    </OverlayView>
-                ))}
+                        <CustomMarker 
+                            price={kos.harga} 
+                            isPremium={kos.kos_premium}
+                        />
+                    </div>
+                </OverlayView>
+            ))}
 
-                {selectedKos && (
-                    <InfoWindow
+            {selectedKos && (
+                <InfoWindow
                     position={{
                         lat: selectedKos.kos_lat,
                         lng: selectedKos.kos_lng
@@ -117,9 +112,8 @@ const MapKos = ({ kosList, center, onMarkerClick, onLoad }: MapKosProps) => {
                         </p>
                     </div>
                 </InfoWindow>
-                )}
-            </GoogleMap>
-        </LoadScript>
+            )}
+        </GoogleMap>
     );
 };
 
