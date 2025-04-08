@@ -80,10 +80,9 @@ const SearchPage = () => {
         try {
             setSearchInput(place.description);
             
-            // Get coordinates from Google Places API
             if (!isLoaded) {
                 console.error('Google Maps API not loaded');
-                router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
+                router.push(`/cariKos?lokasi=${encodeURIComponent(place.description)}`);
                 return;
             }
             
@@ -91,13 +90,19 @@ const SearchPage = () => {
             console.log('Location:', location); // Debug
             
             if (location) {
-                router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}&lat=${location.lat}&lng=${location.lng}`);
+                router.push(
+                    `/cariKos?` + 
+                    `lokasi=${encodeURIComponent(place.description)}` +
+                    `&lat=${location.lat}` +
+                    `&lng=${location.lng}` +
+                    `&locationName=${encodeURIComponent(place.structured_formatting.main_text)}`
+                );
             } else {
-                router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
+                router.push(`/cariKos?lokasi=${encodeURIComponent(place.description)}`);
             }
         } catch (error) {
             console.error('Error handling place selection:', error);
-            router.push(`/carikos?lokasi=${encodeURIComponent(place.description)}`);
+            router.push(`/cariKos?lokasi=${encodeURIComponent(place.description)}`);
         }
     };
 

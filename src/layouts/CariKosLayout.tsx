@@ -7,6 +7,7 @@ import { KosData } from '../types/kosData';
 import EmptyStateHandler from '../components/CariKos/components/EmptyStateHandler';
 import { useRouter } from 'next/router';
 import MapKos from '../components/CariKos/MapKos';
+import { DEFAULT_RADIUS_KM } from '../utils/mapUtils';
 
 const DEFAULT_LAT = -8.670458; // Denpasar, Bali latitude
 const DEFAULT_LNG = 115.212629; // Denpasar, Bali longitude
@@ -20,52 +21,20 @@ export default function CariKosLayout() {
     const [filterCount, setFilterCount] = useState(0);
     const isFirstLoad = useRef(true);
     const [isMapLoading, setIsMapLoading] = useState(true);
+    const router = useRouter();
+    const { lat, lng, locationName} = router.query;
+    const [isRadiusLoading, setIsRadiusLoading] = useState(false);
+    const [currentRadius, setCurrentRadius] = useState(DEFAULT_RADIUS_KM);
     const [filters, setFilters] = useState({
         premium: false,
         minPrice: 100000,
         maxPrice: 20000000,
     });
-    
-    const router = useRouter();
-    const { lat, lng } = router.query;
 
     // Track if a fetch is in progress to prevent duplicate requests
     const loadingRef = useRef(false);
 
-    // Modify the location handling effect
-    useEffect(() => {
-        const currentLat = lat ? parseFloat(lat as string) : DEFAULT_LAT;
-        const currentLng = lng ? parseFloat(lng as string) : DEFAULT_LNG;
-        
-        if (isNaN(currentLat) || isNaN(currentLng)) {
-            console.error('Invalid location data:', { currentLat, currentLng });
-            setError('Lokasi tidak valid');
-            return;
-        }
-
-        // If no location in URL, update the URL with default coordinates
-        if (!lat || !lng) {
-            router.replace({
-                pathname: router.pathname,
-                query: {
-                    ...router.query,
-                    lat: DEFAULT_LAT,
-                    lng: DEFAULT_LNG
-                }
-            }, undefined, { shallow: true });
-            return; // Wait for the URL update to trigger this effect again
-        }
-
-        // Reset state and load initial data
-        setPage(1);
-        setKosList([]);
-        setHasMore(true);
-        setError(null);
-        loadKos(false, 1);
-
-    }, [lat, lng]); // Remove loadKos from dependencies
-
-    const loadKos = useCallback(async (isLoadMore = false, currentPage = 1) => {
+    const loadKos = useCallback(async (isLoadMore = false, currentPage = 1, radius = currentRadius) => {
         if (loadingRef.current) {
             console.log('Fetch already in progress, skipping');
             return;
@@ -75,11 +44,11 @@ export default function CariKosLayout() {
         setLoading(true);
         
         try {
-            console.log(`Loading page ${currentPage}, isLoadMore: ${isLoadMore}`);
+            console.log(`Loading page ${currentPage}, isLoadMore: ${isLoadMore}, radius: ${radius}km`);
             const response = await fetchKosList({
                 lat: parseFloat(lat as string) || DEFAULT_LAT,
                 lng: parseFloat(lng as string) || DEFAULT_LNG,
-                radius: 10,
+                radius, // Use the passed radius parameter
                 page: currentPage,
                 limit: 10,
                 ...filters,
@@ -110,18 +79,44 @@ export default function CariKosLayout() {
             setLoading(false);
             loadingRef.current = false;
         }
-    }, [lat, lng, filters]);
+    }, [lat, lng, filters, currentRadius]);
 
-    // Initial data load when component mounts or lat/lng changes
+    // Modify the location handling effect
     useEffect(() => {
-        if (lat && lng) {
-            if (isFirstLoad.current) {
-                isFirstLoad.current = false;
-            }
-            setPage(1);
-            loadKos(false, 1);
+        const currentLat = lat ? parseFloat(lat as string) : DEFAULT_LAT;
+        const currentLng = lng ? parseFloat(lng as string) : DEFAULT_LNG;
+        
+        if (isNaN(currentLat) || isNaN(currentLng)) {
+            console.error('Invalid location data:', { currentLat, currentLng });
+            setError('Lokasi tidak valid');
+            return;
         }
+    
+        // Reset state and load initial data
+        setPage(1);
+        setKosList([]);
+        setHasMore(true);
+        setError(null);
+        
+        if (isFirstLoad.current) {
+            isFirstLoad.current = false;
+        }
+        
+        loadKos(false, 1);
     }, [lat, lng, loadKos]);
+
+    const handleRadiusChange = useCallback((newRadius: number) => {
+        if (newRadius < 1 || newRadius > 50) {
+            console.warn('Invalid radius:', newRadius);
+            return;
+        }
+        
+        console.log('Radius changed:', newRadius, 'km');
+        setCurrentRadius(newRadius);
+        setIsRadiusLoading(true);
+        loadKos(false, 1, newRadius)
+            .finally(() => setIsRadiusLoading(false));
+    }, [loadKos]);
     
     // Handle filter changes
     useEffect(() => {
@@ -132,20 +127,6 @@ export default function CariKosLayout() {
         }
     }, [filters]);
     
-    // This effect handles loading more data when page changes
-    useEffect(() => {
-        // Reset state when location changes
-        setPage(1);
-        setKosList([]);
-        setHasMore(true);
-        setError(null);
-        
-        if (lat && lng) {
-            console.log('Location changed, loading initial data:', { lat, lng });
-            loadKos(false, 1);
-        }
-    }, [lat, lng]); // Remove loadKos from dependencies to prevent loops
-
     const handleLoadMore = useCallback(() => {
         if (loading || !hasMore || loadingRef.current) {
             console.log('Load more prevented:', { loading, hasMore, loadingInProgress: loadingRef.current });
@@ -180,6 +161,14 @@ export default function CariKosLayout() {
         });
         setFilterCount(0);
     };
+
+    const handleMarkerClick = useCallback((kos: KosData) => {
+        // Scroll the list to the clicked kos item
+        const kosElement = document.getElementById(`kos-${kos.kos_id}`);
+        if (kosElement) {
+            kosElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }, []);
 
     return (
         <GlobalLayout>
@@ -233,10 +222,11 @@ export default function CariKosLayout() {
                             lat: parseFloat(lat as string) || DEFAULT_LAT,
                             lng: parseFloat(lng as string) || DEFAULT_LNG
                         }}
-                        onMarkerClick={(kos) => {
-                            console.log('Kos clicked:', kos);
-                        }}
+                        locationName={locationName as string || 'Selected Location'}
+                        initialRadius={currentRadius}
+                        onMarkerClick={handleMarkerClick}
                         onLoad={() => setIsMapLoading(false)}
+                        onRadiusChange={handleRadiusChange}
                     />
                 </div>
             </div>
