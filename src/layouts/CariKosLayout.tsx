@@ -37,13 +37,19 @@ export default function CariKosLayout() {
     });
 
     // Track if a fetch is in progress to prevent duplicate requests
+    // Add refs to track initialization state
     const loadingRef = useRef(false);
+    const initialParamsProcessed = useRef(false);
 
     const loadKos = useCallback(async (isLoadMore = false, currentPage = 1, radius = currentRadius) => {
         if (loadingRef.current) {
             console.log('Fetch already in progress, skipping');
             return;
         }
+
+        // Verify we have lat/lng before loading
+        const currentLat = parseFloat(lat as string) || DEFAULT_LAT;
+        const currentLng = parseFloat(lng as string) || DEFAULT_LNG;
         
         loadingRef.current = true;
         setLoading(true);
@@ -53,9 +59,9 @@ export default function CariKosLayout() {
             console.log('Applying filters:', filters);
             
             const response = await fetchKosList({
-                lat: parseFloat(lat as string) || DEFAULT_LAT,
-                lng: parseFloat(lng as string) || DEFAULT_LNG,
-                radius, // Use the passed radius parameter
+                lat: currentLat,
+                lng: currentLng,
+                radius, 
                 page: currentPage,
                 limit: 10,
                 premium: filters.premium,
@@ -64,7 +70,7 @@ export default function CariKosLayout() {
                 minPrice: filters.minPrice,
                 maxPrice: filters.maxPrice === 0 ? Infinity : filters.maxPrice,
                 fasilitas: filters.fasilitas,
-                sortBy: filters.sortBy // Add this line to pass the sort option
+                sortBy: filters.sortBy
             });
     
             if (Array.isArray(response)) {
@@ -93,29 +99,60 @@ export default function CariKosLayout() {
         }
     }, [lat, lng, filters, currentRadius]);
 
-    // Modify the location handling effect
+    // Update the useEffect that handles URL params
     useEffect(() => {
+        // Skip if we've already processed initial params
+        if (initialParamsProcessed.current) return;
+        
+        // Skip if router isn't ready yet
+        if (!router.isReady) return;
+        
+        console.log('Processing initial URL parameters');
         const currentLat = lat ? parseFloat(lat as string) : DEFAULT_LAT;
         const currentLng = lng ? parseFloat(lng as string) : DEFAULT_LNG;
+        const premium = router.query.premium === 'true';
         
         if (isNaN(currentLat) || isNaN(currentLng)) {
             console.error('Invalid location data:', { currentLat, currentLng });
             setError('Lokasi tidak valid');
             return;
         }
-    
-        // Reset state and load initial data
+
+        // Reset state
         setPage(1);
         setKosList([]);
         setHasMore(true);
         setError(null);
         
-        if (isFirstLoad.current) {
-            isFirstLoad.current = false;
+        // Set premium filter if present in URL
+        if (premium) {
+            console.log('Setting premium filter from URL parameter');
+            setFilters(prev => ({
+                ...prev,
+                premium: true
+            }));
+            setFilterCount(prev => prev + 1);
         }
         
+        // Mark that we've processed initial params
+        initialParamsProcessed.current = true;
+        isFirstLoad.current = false;
+        
+        // Initial load
         loadKos(false, 1);
-    }, [lat, lng, loadKos]);
+    }, [router.isReady, router.query, loadKos]);
+
+    // This effect handles location change (lat/lng) when they change
+    useEffect(() => {
+        // Skip the first run since we handle that in the initialization effect
+        if (isFirstLoad.current) return;
+        if (!initialParamsProcessed.current) return;
+        
+        console.log('Location changed, reloading data');
+        setPage(1);
+        setKosList([]);
+        loadKos(false, 1);
+    }, [lat, lng]); 
 
     const handleRadiusChange = useCallback((newRadius: number) => {
         if (newRadius < 1 || newRadius > 50) {
@@ -130,14 +167,17 @@ export default function CariKosLayout() {
             .finally(() => setIsRadiusLoading(false));
     }, [loadKos]);
     
-    // Handle filter changes
+    // Handle filter changes separately
     useEffect(() => {
-        if (!isFirstLoad.current) {
-            setPage(1);
-            setKosList([]);
-            loadKos(false, 1);
-        }
-    }, [filters]);
+        // Skip the effect during initialization
+        if (isFirstLoad.current) return;
+        if (!initialParamsProcessed.current) return;
+        
+        console.log('Filters changed, reloading data');
+        setPage(1);
+        setKosList([]);
+        loadKos(false, 1);
+    }, [filters, loadKos]);
     
     const handleLoadMore = useCallback(() => {
         if (loading || !hasMore || loadingRef.current) {
