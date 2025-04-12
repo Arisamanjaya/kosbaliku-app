@@ -14,19 +14,35 @@ interface FilterKosProps {
     setFilterCount: React.Dispatch<React.SetStateAction<number>>;
     filters: {
         premium: boolean;
+        tipe: string;
+        durasi: string;
         minPrice: number;
         maxPrice: number;
+        fasilitas: string[];
+        sortBy: string;
     };
     setFilters: React.Dispatch<React.SetStateAction<{
         premium: boolean;
+        tipe: string;
+        durasi: string;
         minPrice: number;
         maxPrice: number;
+        fasilitas: string[];
+        sortBy: string;
     }>>;
     onResetFilter: () => void;
+    onSortChange: (sortOption: string) => void;
 }
 
-export default function FilterKos({ filterCount, setFilterCount, onFilterChange, onResetFilter, filters}: FilterKosProps) {
-    const [isPremium, setIsPremium] = useState(false);
+export default function FilterKos({ 
+    filterCount, 
+    setFilterCount, 
+    onFilterChange, 
+    onResetFilter, 
+    filters,
+    setFilters,
+    onSortChange
+}: FilterKosProps) {
     const [sortOption, setSortOption] = useState("Rekomen");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
@@ -52,24 +68,44 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
         return () => window.removeEventListener("scroll", handleScroll);
     }, [lastScrollY]);
 
-
     const handleSortClick = () => {
         const options = ["Rekomen", "Harga Terendah", "Harga Tertinggi"];
         const currentIndex = options.indexOf(sortOption);
         const nextIndex = (currentIndex + 1) % options.length;
-        setSortOption(options[nextIndex]);
+        const newSortOption = options[nextIndex];
+        setSortOption(newSortOption);
+        onSortChange(newSortOption);
     };
 
-    const handleApplyFilters = (count: number, appliedFilters: Partial<any>) => {
+    const handleApplyFilters = (count: number, appliedFilters: any) => {
         setFilterCount(count);
-        onFilterChange(appliedFilters);
+        // Map the filter fields correctly
+        const updatedFilters = {
+            ...filters,
+            tipe: appliedFilters.tipe || "",
+            durasi: appliedFilters.durasi || "",
+            minPrice: appliedFilters.hargaMin || 0,
+            maxPrice: appliedFilters.hargaMax || 0,
+            fasilitas: appliedFilters.fasilitas || []
+        };
+        setFilters(updatedFilters);
+        onFilterChange(updatedFilters);
         setIsModalOpen(false);
     };
 
     const handleResetFilters = () => {
         setFilterCount(0);
-        onFilterChange({ premium: false, minPrice: 100000, maxPrice: 999999999 });
         onResetFilter();
+    };
+
+    const handlePremiumToggle = () => {
+        const updatedFilters = {
+            ...filters,
+            premium: !filters.premium
+        };
+        setFilters(updatedFilters);
+        onFilterChange(updatedFilters);
+        setFilterCount(prev => filters.premium ? prev - 1 : prev + 1);
     };
 
     return (
@@ -98,7 +134,7 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
                     {/* Reset Filter Button */}
                     {filterCount > 0 && (
                         <button
-                            onClick={handleResetFilters} // ✅ Pakai function yang benar
+                            onClick={handleResetFilters}
                             className="border border-red-400 text-red-500 px-4 py-2 rounded-full flex items-center gap-2"
                         >
                             <IconX size={16} />
@@ -108,17 +144,12 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
 
                     {/* Premium Button */}
                     <button
-                        onClick={() => {
-                            const newPremium = !isPremium;
-                            setIsPremium(newPremium);
-                            const updatedFilters = { ...filters, premium: newPremium };
-                            onFilterChange(updatedFilters);
-                        }}
+                        onClick={handlePremiumToggle}
                         className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
-                            isPremium ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
+                            filters.premium ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
                         }`}
                     >
-                        {isPremium ? (
+                        {filters.premium ? (
                             <IconFlameFilled size={16} className="text-secondary-500" />
                         ) : (
                             <IconFlame size={16} className="text-secondary-500" />
@@ -140,10 +171,14 @@ export default function FilterKos({ filterCount, setFilterCount, onFilterChange,
             {/* Modal Filter */}
             {isModalOpen && (
                 <FilterModal
-                    initialFilters={filters} 
-                    onApply={(count, newFilters) => {
-                        handleApplyFilters(count, newFilters); // ✅ Update filters di parent
-                    }} 
+                    initialFilters={{
+                        tipe: filters.tipe,
+                        durasi: filters.durasi,
+                        hargaMin: filters.minPrice,
+                        hargaMax: filters.maxPrice,
+                        fasilitas: filters.fasilitas
+                    }}
+                    onApply={handleApplyFilters}
                     onClose={() => setIsModalOpen(false)} 
                 />
             )}

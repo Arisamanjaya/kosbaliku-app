@@ -28,8 +28,12 @@ export default function CariKosLayout() {
     const [currentRadius, setCurrentRadius] = useState(DEFAULT_RADIUS_KM);
     const [filters, setFilters] = useState({
         premium: false,
-        minPrice: 100000,
-        maxPrice: 20000000,
+        tipe: "",
+        durasi: "",
+        minPrice: 0,
+        maxPrice: 0,
+        fasilitas: [] as string[],
+        sortBy: "Rekomen"
     });
 
     // Track if a fetch is in progress to prevent duplicate requests
@@ -46,14 +50,21 @@ export default function CariKosLayout() {
         
         try {
             console.log(`Loading page ${currentPage}, isLoadMore: ${isLoadMore}, radius: ${radius}km`);
+            console.log('Applying filters:', filters);
+            
             const response = await fetchKosList({
                 lat: parseFloat(lat as string) || DEFAULT_LAT,
                 lng: parseFloat(lng as string) || DEFAULT_LNG,
                 radius, // Use the passed radius parameter
                 page: currentPage,
                 limit: 10,
-                ...filters,
-                maxPrice: filters.maxPrice === Infinity ? Number.MAX_SAFE_INTEGER : filters.maxPrice,
+                premium: filters.premium,
+                tipe: filters.tipe,
+                durasi: filters.durasi,
+                minPrice: filters.minPrice,
+                maxPrice: filters.maxPrice === 0 ? Infinity : filters.maxPrice,
+                fasilitas: filters.fasilitas,
+                // Add sorting if needed based on filters.sortBy
             });
     
             if (Array.isArray(response)) {
@@ -148,8 +159,11 @@ export default function CariKosLayout() {
         // Calculate filter count
         let count = 0;
         if (newFilters.premium) count++;
-        if (newFilters.minPrice > 100000) count++;
-        if (newFilters.maxPrice < 20000000) count++;
+        if (newFilters.tipe) count++;
+        if (newFilters.durasi) count++;
+        if (newFilters.minPrice > 0) count++;
+        if (newFilters.maxPrice > 0) count++;
+        if (newFilters.fasilitas.length > 0) count++;
         setFilterCount(count);
     };
     
@@ -157,8 +171,12 @@ export default function CariKosLayout() {
         console.log('Filters reset');
         setFilters({
             premium: false,
-            minPrice: 100000,
-            maxPrice: 20000000,
+            tipe: "",
+            durasi: "",
+            minPrice: 0,
+            maxPrice: 0,
+            fasilitas: [],
+            sortBy: "Rekomen"
         });
         setFilterCount(0);
     };
@@ -171,6 +189,15 @@ export default function CariKosLayout() {
         }
     }, []);
 
+    // Add handleSortChange
+    const handleSortChange = (sortOption: string) => {
+        setFilters(prev => ({
+            ...prev,
+            sortBy: sortOption
+        }));
+        // This will trigger a re-fetch of data due to the useEffect watching filters
+    };
+
     return (
         <div className='flex flex-col h-screen'>
             {/* Fixed Navbar */}
@@ -182,13 +209,14 @@ export default function CariKosLayout() {
                 <div className="max-w-2xl flex flex-col overflow-hidden bg-white">
                     {/* Filter component - fixed at top */}
                     <div className="flex-shrink-0">
-                        <FilterKos 
+                    <FilterKos 
                             filterCount={filterCount}  
                             setFilterCount={setFilterCount}  
                             filters={filters}  
                             setFilters={setFilters}  
                             onResetFilter={handleResetFilter}  
                             onFilterChange={handleFilterChange}
+                            onSortChange={handleSortChange}
                         />
                     </div>
                     
@@ -203,9 +231,15 @@ export default function CariKosLayout() {
                             </div>
                         ) : kosList.length === 0 && !hasMore ? ( 
                             <EmptyStateHandler 
-                            isSearchEmpty={!filters.premium && filters.minPrice === 100000 && filters.maxPrice === 20000000}
-                            isFilterEmpty={filters.premium || filters.minPrice > 100000 || filters.maxPrice < 20000000}
-                            isHaversineEmpty={kosList.length === 0 && !hasMore}
+                                isSearchEmpty={kosList.length === 0 && !filters.premium && !filters.tipe && !filters.durasi && filters.minPrice === 0 && filters.maxPrice === 0 && filters.fasilitas.length === 0}
+                                isFilterEmpty={kosList.length === 0 && !!(filters.premium || filters.tipe || filters.durasi || filters.minPrice > 0 || filters.maxPrice > 0 || filters.fasilitas.length > 0)}
+                                isHaversineEmpty={kosList.length === 0 && !hasMore && !filters.premium && !filters.tipe && !filters.durasi && filters.minPrice === 0 && filters.maxPrice === 0 && filters.fasilitas.length === 0}
+                                appliedFilters={{
+                                    tipe: filters.tipe,
+                                    premium: filters.premium,
+                                    fasilitas: filters.fasilitas,
+                                    durasi: filters.durasi
+                                }}
                             />
                         ) : (
                             <>

@@ -1,10 +1,12 @@
 import { supabase } from '../supabase';
 
+// Update the CariKosParams interface and implementation
+
 interface CariKosParams {
     tipe?: string;
     durasi?: string;
-    minPrice?: number;  // Changed from hargaMin to match your component
-    maxPrice?: number;  // Changed from hargaMax to match your component
+    minPrice?: number;
+    maxPrice?: number;
     fasilitas?: string[];
     page?: number;
     limit?: number;
@@ -13,6 +15,7 @@ interface CariKosParams {
     lat?: number;
     lng?: number;
     radius?: number;
+    sortBy?: string;
 }
 
 export async function fetchKosList({
@@ -23,15 +26,17 @@ export async function fetchKosList({
     fasilitas = [],
     premium = false,
     page = 1,
-    limit = 10,  // We'll keep 10 items per page
+    limit = 10,
     lat,
     lng,
     radius = 10,
+    sortBy = 'Rekomen'
 }: CariKosParams = {}) {
     try {
         const start = (page - 1) * limit;
         const end = start + limit - 1;
         console.log(`Fetching kos data: page ${page}, range ${start} to ${end}`);
+        console.log('Filters applied:', { tipe, durasi, minPrice, maxPrice, fasilitas, premium, sortBy });
 
         // Build the base select query
         const selectQuery = `
@@ -65,7 +70,7 @@ export async function fetchKosList({
             if (rpcError) throw rpcError;
 
             const kosIdsInRadius = rpcData.map((item: any) => item.kos_id);
-            if (kosIdsInRadius.length === 0) return [];
+            if (kosIdsInRadius.length === 0) return { data: [], totalCount: 0, hasMore: false };
 
             filterQuery = filterQuery.in('kos_id', kosIdsInRadius);
         }
@@ -73,6 +78,7 @@ export async function fetchKosList({
         // Apply other filters
         if (premium) filterQuery = filterQuery.eq('kos_premium', true);
         if (tipe) filterQuery = filterQuery.eq('kos_tipe', tipe);
+        // We'll handle price and other filters after initial fetch
 
         // Get total count with filters
         const countQuery = supabase
@@ -113,21 +119,68 @@ export async function fetchKosList({
         }
 
         // Map the data
-        const mappedData = mapKosData(kosData || []);
+        let mappedData = mapKosData(kosData || []);
+        
+        // Apply post-fetch filters for price, duration, and facilities
+        if (minPrice > 0 || maxPrice > 0 || durasi || fasilitas.length > 0) {
+            mappedData = mappedData.filter(kos => {
+                // Apply price filter
+                if (minPrice > 0 && kos.harga < minPrice) return false;
+                if (maxPrice > 0 && maxPrice !== Infinity && kos.harga > maxPrice) return false;
+                
+                // Apply duration filter
+                if (durasi && kos.durasi.toLowerCase() !== durasi.toLowerCase()) return false;
+                
+                // Apply facilities filter
+                if (fasilitas.length > 0) {
+                    // Check if all required facilities are present
+                    return fasilitas.every(f => kos.fasilitas.includes(f));
+                }
+                
+                return true;
+            });
+        }
+        
+        // Apply sorting
+        if (sortBy) {
+            switch (sortBy) {
+                case 'Harga Terendah':
+                    mappedData.sort((a, b) => a.harga - b.harga);
+                    break;
+                case 'Harga Tertinggi':
+                    mappedData.sort((a, b) => b.harga - a.harga);
+                    break;
+                case 'Rekomen':
+                default:
+                    // For recommended, premium ones first, then by price
+                    mappedData.sort((a, b) => {
+                        if (a.kos_premium === b.kos_premium) {
+                            return a.harga - b.harga;
+                        }
+                        return a.kos_premium ? -1 : 1;
+                    });
+                    break;
+            }
+        }
+        
+        // Post-filter count will be different from initial count
+        const actualCount = mappedData.length;
+        const paginatedData = mappedData.slice(0, limit);
         
         console.log({
             page,
             start,
             end,
-            totalCount: filteredCount,
-            returnedItems: mappedData.length,
-            hasMore: (filteredCount ?? 0) > (page * limit)
+            initialCount: filteredCount,
+            filteredCount: actualCount,
+            returnedItems: paginatedData.length,
+            hasMore: actualCount > limit
         });
 
         return {
-            data: mappedData,
-            totalCount: filteredCount,
-            hasMore: (filteredCount ?? 0) > (page * limit)
+            data: paginatedData,
+            totalCount: actualCount,
+            hasMore: actualCount > limit
         };
 
     } catch (error) {
@@ -136,7 +189,7 @@ export async function fetchKosList({
     }
 }
 
-// Helper function to map data consistently
+// Helper function remains the same
 function mapKosData(data: any[]) {
     return data.map((kos: any) => {
         return {
