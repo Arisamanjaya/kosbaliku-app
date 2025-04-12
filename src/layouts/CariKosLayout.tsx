@@ -33,7 +33,7 @@ export default function CariKosLayout() {
         minPrice: 0,
         maxPrice: 0,
         fasilitas: [] as string[],
-        sortBy: "Rekomen"
+        sortBy: "Terdekat"  // Changed from "Rekomen" to "Terdekat"
     });
 
     // Track if a fetch is in progress to prevent duplicate requests
@@ -64,7 +64,7 @@ export default function CariKosLayout() {
                 minPrice: filters.minPrice,
                 maxPrice: filters.maxPrice === 0 ? Infinity : filters.maxPrice,
                 fasilitas: filters.fasilitas,
-                // Add sorting if needed based on filters.sortBy
+                sortBy: filters.sortBy // Add this line to pass the sort option
             });
     
             if (Array.isArray(response)) {
@@ -176,7 +176,7 @@ export default function CariKosLayout() {
             minPrice: 0,
             maxPrice: 0,
             fasilitas: [],
-            sortBy: "Rekomen"
+            sortBy: "Terdekat"  // Changed from "Rekomen" to "Terdekat"
         });
         setFilterCount(0);
     };

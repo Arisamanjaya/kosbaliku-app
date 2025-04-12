@@ -150,18 +150,28 @@ export async function fetchKosList({
                 case 'Harga Tertinggi':
                     mappedData.sort((a, b) => b.harga - a.harga);
                     break;
-                case 'Rekomen':
+                case 'Terdekat':
                 default:
-                    // For recommended, premium ones first, then by price
-                    mappedData.sort((a, b) => {
-                        if (a.kos_premium === b.kos_premium) {
-                            return a.harga - b.harga;
-                        }
-                        return a.kos_premium ? -1 : 1;
-                    });
+                    // If we have lat/lng, sort by distance
+                    if (lat && lng) {
+                        mappedData.sort((a, b) => {
+                            const distA = calculateDistance(lat, lng, a.kos_lat, a.kos_lng);
+                            const distB = calculateDistance(lat, lng, b.kos_lat, b.kos_lng);
+                            return distA - distB;
+                        });
+                    } else {
+                        // Fall back to premium first, then by price
+                        mappedData.sort((a, b) => {
+                            if (a.kos_premium === b.kos_premium) {
+                                return a.harga - b.harga;
+                            }
+                            return a.kos_premium ? -1 : 1;
+                        });
+                    }
                     break;
             }
         }
+        
         
         // Post-filter count will be different from initial count
         const actualCount = mappedData.length;
@@ -187,6 +197,20 @@ export async function fetchKosList({
         console.error('Error in fetchKosList:', error);
         throw error;
     }
+}
+
+function calculateDistance(lat1: number, lng1: number, lat2: number, lng2: number) {
+    // Haversine formula to calculate distance between two points
+    const R = 6371; // Radius of the earth in km
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lng2 - lng1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2); 
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a)); 
+    const distance = R * c; // Distance in km
+    return distance;
 }
 
 // Helper function remains the same

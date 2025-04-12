@@ -43,10 +43,16 @@ export default function FilterKos({
     setFilters,
     onSortChange
 }: FilterKosProps) {
-    const [sortOption, setSortOption] = useState("Rekomen");
+    // Initialize sortOption state from filters prop to keep it in sync
+    const [sortOption, setSortOption] = useState(filters.sortBy || "Terdekat");
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
+    
+    // Update sortOption when filters.sortBy changes
+    useEffect(() => {
+        setSortOption(filters.sortBy || "Terdekat");
+    }, [filters.sortBy]);
     
     // Scroll behavior handler
     useEffect(() => {
@@ -69,7 +75,8 @@ export default function FilterKos({
     }, [lastScrollY]);
 
     const handleSortClick = () => {
-        const options = ["Rekomen", "Harga Terendah", "Harga Tertinggi"];
+        // Updated options: "Terdekat" (default), "Harga Terendah", "Harga Tertinggi"
+        const options = ["Terdekat", "Harga Terendah", "Harga Tertinggi"];
         const currentIndex = options.indexOf(sortOption);
         const nextIndex = (currentIndex + 1) % options.length;
         const newSortOption = options[nextIndex];
