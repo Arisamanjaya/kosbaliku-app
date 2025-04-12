@@ -1,4 +1,5 @@
 import GlobalLayout from './GlobalLayout';
+import Navbar from '../components/Navbar/NavbarCariKos';
 import FilterKos from '../components/CariKos/FilterKos';
 import ListKos from '../components/CariKos/ListKos';
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -171,46 +172,59 @@ export default function CariKosLayout() {
     }, []);
 
     return (
-        <GlobalLayout>
-            <div className="flex mx-auto w-full h-screen bg-slate-200">
-                <div className="max-w-2xl overflow-y-auto bg-white h-screen">
-                    <FilterKos 
-                        filterCount={filterCount}  
-                        setFilterCount={setFilterCount}  
-                        filters={filters}  
-                        setFilters={setFilters}  
-                        onResetFilter={handleResetFilter}  
-                        onFilterChange={handleFilterChange}
-                    />
-                    {error ? (
-                        <p className="text-center text-red-500 p-4">{error}</p>
-                    ) : loading && page === 1 ? (
-                        <div className="text-center p-4">
-                            <p className="text-gray-500">Memuat data kos...</p>
-                            <p className="text-sm text-gray-400">Mohon tunggu sebentar</p>
-                        </div>
-                    ) : kosList.length === 0 && !hasMore ? ( 
-                        <EmptyStateHandler 
-                        isSearchEmpty={!filters.premium && filters.minPrice === 100000 && filters.maxPrice === 20000000}
-                        isFilterEmpty={filters.premium || filters.minPrice > 100000 || filters.maxPrice < 20000000}
-                        isHaversineEmpty={kosList.length === 0 && !hasMore}
+        <div className='flex flex-col h-screen'>
+            {/* Fixed Navbar */}
+            <Navbar />
+            
+            {/* Main content area - takes remaining height */}
+            <div className="flex flex-1 w-full overflow-hidden bg-slate-200">
+                {/* Left sidebar with listing - only this should scroll */}
+                <div className="max-w-2xl flex flex-col overflow-hidden bg-white">
+                    {/* Filter component - fixed at top */}
+                    <div className="flex-shrink-0">
+                        <FilterKos 
+                            filterCount={filterCount}  
+                            setFilterCount={setFilterCount}  
+                            filters={filters}  
+                            setFilters={setFilters}  
+                            onResetFilter={handleResetFilter}  
+                            onFilterChange={handleFilterChange}
                         />
-                    ) : (
-                        <>
-                            <ListKos 
-                                kosList={kosList} 
-                                onLoadMore={handleLoadMore} 
-                                hasMore={hasMore}
-                                loading={loading}
+                    </div>
+                    
+                    {/* Scrollable list container */}
+                    <div className="flex-1 overflow-y-auto">
+                        {error ? (
+                            <p className="text-center text-red-500 p-4">{error}</p>
+                        ) : loading && page === 1 ? (
+                            <div className="text-center p-4">
+                                <p className="text-gray-500">Memuat data kos...</p>
+                                <p className="text-sm text-gray-400">Mohon tunggu sebentar</p>
+                            </div>
+                        ) : kosList.length === 0 && !hasMore ? ( 
+                            <EmptyStateHandler 
+                            isSearchEmpty={!filters.premium && filters.minPrice === 100000 && filters.maxPrice === 20000000}
+                            isFilterEmpty={filters.premium || filters.minPrice > 100000 || filters.maxPrice < 20000000}
+                            isHaversineEmpty={kosList.length === 0 && !hasMore}
+                            />
+                        ) : (
+                            <>
+                                <ListKos 
+                                    kosList={kosList} 
+                                    onLoadMore={handleLoadMore} 
+                                    hasMore={hasMore}
+                                    loading={loading}
                                 />
-                            {loading && page > 1 && (
-                                <p className="text-center text-gray-500 py-2">Memuat data tambahan...</p>
-                            )}
-                        </>
-                    )}
+                                {loading && page > 1 && (
+                                    <p className="text-center text-gray-500 py-2">Memuat data tambahan...</p>
+                                )}
+                            </>
+                        )}
+                    </div>
                 </div>
-                {/* Map Section */}
-                <div className="w-3/4 h-screen sticky top-0">
+                
+                {/* Map Section - fixed and fills remaining space */}
+                <div className="flex-1 h-full">
                     {isMapLoading && (
                         <div className="w-full h-full flex items-center justify-center bg-gray-100">
                             <div className="text-gray-500">Loading map...</div>
@@ -230,6 +244,6 @@ export default function CariKosLayout() {
                     />
                 </div>
             </div>
-        </GlobalLayout>
+        </div>
     );
 }

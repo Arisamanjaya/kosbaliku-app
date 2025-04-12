@@ -4,6 +4,12 @@ import { useEffect, useState } from "react";
 import KosCard from "../../Cards/KosCard";
 import KosCardMobile from "../../Cards/KosCardMobile";
 
+const DENPASAR_LOCATION = {
+    lat: -8.670458,
+    lng: 115.212629,
+    name: "Denpasar"
+};
+
 export default function KosPremium() {
     const [kosPremium, setKosPremium] = useState<KosData[]>([]);
     const [loading, setLoading] = useState(true);
@@ -13,7 +19,12 @@ export default function KosPremium() {
         async function loadPremiumKos() {
             try {
                 setLoading(true);
-                const data = await fetchPremiumKos();
+                // Pass Denpasar coordinates to the API
+                const data = await fetchPremiumKos({
+                    lat: DENPASAR_LOCATION.lat,
+                    lng: DENPASAR_LOCATION.lng,
+                    radius: 5 // 5km radius from Denpasar center
+                });
                 setKosPremium(data);
             } catch (err: any) {
                 setError(err.message);
@@ -29,8 +40,17 @@ export default function KosPremium() {
         <div className="w-full px-4 md:px-6 lg:px-10">
             <div className="max-w-7xl mx-auto flex flex-col gap-8">
                 <div className="flex justify-between items-center">
-                    <h3 className="text-primary-500 text-lg font-semibold">Kos Premium</h3>
-                    <a href="/cari-kos?premium=true" className="text-base text-primary-500 underline">
+                    <h3 className="text-primary-500 text-lg font-semibold">Kos Premium Denpasar</h3>
+                    <a 
+                        href={`/cariKos?` + 
+                            `lokasi=${encodeURIComponent(DENPASAR_LOCATION.name)}` +
+                            `&lat=${DENPASAR_LOCATION.lat}` +
+                            `&lng=${DENPASAR_LOCATION.lng}` +
+                            `&locationName=${encodeURIComponent(DENPASAR_LOCATION.name)}` +
+                            `&premium=true`
+                        } 
+                        className="text-base text-primary-500 underline"
+                    >
                         Lihat Semua
                     </a>
                 </div>

@@ -1,8 +1,24 @@
 import { supabase } from "../supabase";
 import { KosData } from '../../types/kosData';  // optional kalau kamu mau strict pakai type
 
-export async function fetchRekomendasiKos(): Promise<KosData[]> {
-    const { data, error } = await supabase
+export async function fetchRekomendasiKos(params: { lat: number; lng: number; radius: number }): Promise<KosData[]> {
+    // First get kos within radius with distance calculation
+    const { data: kosWithinRadius, error: radiusError } = await supabase
+        .rpc('get_kos_within_radius', {
+            user_lat: params.lat,
+            user_lng: params.lng,
+            search_radius: params.radius
+        });
+
+    if (radiusError) throw radiusError;
+
+    if (!kosWithinRadius || kosWithinRadius.length === 0) return [];
+
+    const nearbyKosIds = kosWithinRadius
+        .map((kos: { kos_id: number }) => kos.kos_id)
+        .slice(0, 4);
+
+    const { data: fullKosData, error: kosError } = await supabase
         .from('kos')
         .select(`
             kos_id, 
@@ -17,13 +33,12 @@ export async function fetchRekomendasiKos(): Promise<KosData[]> {
             harga_kos(harga, tipe_durasi),
             kos_images(url_foto)
         `)
-        .eq('kos_premium', false)
-        .order('created_at', { ascending: false })
-        .limit(4);
+        .in('kos_id', nearbyKosIds)
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (kosError) throw kosError;
 
-    return data.map(kos => ({
+    return fullKosData.map(kos => ({
         kos_id: kos.kos_id,
         kos_nama: kos.kos_nama,
         kos_lokasi: kos.kos_lokasi,
@@ -39,8 +54,27 @@ export async function fetchRekomendasiKos(): Promise<KosData[]> {
     }));
 }
 
-export async function fetchPremiumKos(): Promise<KosData[]> {
-    const { data, error } = await supabase
+export async function fetchPremiumKos(params: { lat: number; lng: number; radius: number }): Promise<KosData[]> {
+    // First get kos within radius with distance calculation
+    const { data: kosWithinRadius, error: radiusError } = await supabase
+        .rpc('get_kos_within_radius', {
+            user_lat: params.lat,
+            user_lng: params.lng,
+            search_radius: params.radius
+        }) as { data: { kos_id: number; kos_premium: boolean }[] | null, error: any };
+
+    if (radiusError) throw radiusError;
+
+    // Filter premium kos and get additional data
+    const premiumKosIds = (kosWithinRadius || [])
+        .filter((kos: { kos_id: number; kos_premium: boolean }) => kos.kos_premium)
+        .map(kos => kos.kos_id)
+        .slice(0, 4); // Limit to 4 items
+
+    if (premiumKosIds.length === 0) return [];
+
+    // Get full kos data for premium kos
+    const { data: fullKosData, error: kosError } = await supabase
         .from('kos')
         .select(`
             kos_id, 
@@ -55,13 +89,12 @@ export async function fetchPremiumKos(): Promise<KosData[]> {
             harga_kos(harga, tipe_durasi),
             kos_images(url_foto)
         `)
-        .eq('kos_premium', true)
-        .order('created_at', { ascending: false })
-        .limit(4);
+        .in('kos_id', premiumKosIds)
+        .order('created_at', { ascending: false });
 
-    if (error) throw error;
+    if (kosError) throw kosError;
 
-    return data.map(kos => ({
+    return fullKosData.map(kos => ({
         kos_id: kos.kos_id,
         kos_nama: kos.kos_nama,
         kos_lokasi: kos.kos_lokasi,

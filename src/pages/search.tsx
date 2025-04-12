@@ -12,6 +12,46 @@ type Kos = {
     kos_alamat: string;
 };
 
+interface PopularLocation {
+    name: string;
+    lat: number;
+    lng: number;
+}
+
+// Add this constant above your SearchPage component
+const POPULAR_LOCATIONS: PopularLocation[] = [
+    {
+        name: "UNUD",
+        lat: -8.797435515590471,
+        lng: 115.16893515032222
+    },
+    {
+        name: "UNDIKSHA",
+        lat: -8.117276891357922,
+        lng: 115.087305699892
+    },
+    {
+        name: "ISI BALI",
+        lat: -8.528903096783155,
+        lng: 115.26647377584164
+    },
+    {
+        name: "UNWAR",
+        lat: -8.636666791331918,
+        lng: 115.18944244402377
+    },
+    {
+        name: "KUTA",
+        lat: -8.723129776330416,
+        lng: 115.17292946604752
+    },
+    {
+        name: "CANGGU", // Changed from UBUD
+        lat: -8.651741, // Updated coordinates for Canggu
+        lng: 115.137240
+    }
+];
+
 const SearchPage = () => {
     const [searchInput, setSearchInput] = useState("");
     const [suggestedKos, setSuggestedKos] = useState<Kos[]>([]);
@@ -170,7 +210,11 @@ const SearchPage = () => {
                     onChange={(e) => setSearchInput(e.target.value)}
                     placeholder="Masukan nama lokasi/area/alamat"
                     className="w-full flex-1 text-sm outline-none"
-                    onKeyDown={(e) => e.key === "Enter" && handleSearchSubmit()}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter") {
+                            e.preventDefault(); // Prevent form submission
+                        }
+                    }}
                 />
                 {searchInput && (
                     <button onClick={() => setSearchInput("")}>
@@ -224,16 +268,22 @@ const SearchPage = () => {
             <div className="p-4">
                 <h3 className="text-sm font-medium mb-4">Pencarian Populer</h3>
                 <div className="flex flex-wrap gap-2">
-                    {["UNUD", "UNDIKSHA", "ISI BALI", "UNWAR", "KUTA", "UBUD"].map((item) => (
+                    {POPULAR_LOCATIONS.map((location) => (
                         <button
-                            key={item}
-                            className="px-3 py-1 text-sm border rounded-full"
+                            key={location.name}
+                            className="px-3 py-1 text-sm border rounded-full hover:bg-gray-50 active:bg-gray-100 transition-colors"
                             onClick={() => {
-                                setSearchInput(item);
-                                router.push(`/cari?lokasi=${encodeURIComponent(item)}`);
+                                setSearchInput(location.name);
+                                router.push(
+                                    `/cariKos?` + 
+                                    `lokasi=${encodeURIComponent(location.name)}` +
+                                    `&lat=${location.lat}` +
+                                    `&lng=${location.lng}` +
+                                    `&locationName=${encodeURIComponent(location.name)}`
+                                );
                             }}
                         >
-                            {item}
+                            {location.name}
                         </button>
                     ))}
                 </div>
