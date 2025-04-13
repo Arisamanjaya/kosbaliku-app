@@ -3,8 +3,20 @@ const EARTH_RADIUS = 6371;
 export const DEFAULT_RADIUS_KM = 5;
 
 export const getZoomLevelForRadius = (radiusKm: number): number => {
-    // Formula to convert distance to zoom level
-    return Math.round(14 - Math.log(radiusKm) / Math.LN2);
+    // Simplified formula that gives better results for typical radiuses
+    // Rumus ini lebih sederhana dan memberikan hasil yang lebih baik untuk radius umum
+    if (radiusKm <= 0) return 15; // Default untuk radius yang tidak valid
+    
+    // Table of approximate zoom levels for common radiuses
+    if (radiusKm <= 1) return 15;
+    if (radiusKm <= 2) return 14;
+    if (radiusKm <= 5) return 13;
+    if (radiusKm <= 10) return 12;
+    if (radiusKm <= 20) return 11;
+    if (radiusKm <= 50) return 10;
+    if (radiusKm <= 100) return 9;
+    
+    return 8; // Default for very large radiuses
 };
 
 // Calculate bounds for a given center point and radius
@@ -27,6 +39,8 @@ export const getBoundsFromLatLngRadius = (
 };
 
 export const calculateRadiusFromBounds = (bounds: google.maps.LatLngBounds): number => {
+    if (!bounds) return DEFAULT_RADIUS_KM;
+    
     const center = bounds.getCenter();
     const ne = bounds.getNorthEast();
     
@@ -45,7 +59,12 @@ export const calculateRadiusFromBounds = (bounds: google.maps.LatLngBounds): num
         Math.sin(dLon/2) * Math.sin(dLon/2);
     
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-    const radius = EARTH_RADIUS * c;
+    const distance = EARTH_RADIUS * c; // Distance in km
     
-    return Math.round(radius);
+    // Koreksi: Karena ini diagonal dari center ke ne, kita perlu membuat estimasi radius lingkaran
+    // Biasanya dibagi sekitar sqrt(2) untuk konversi diagonal ke radius
+    const estimatedRadius = distance / Math.sqrt(2);
+    
+    // Batasi radius minimum dan maksimum
+    return Math.max(1, Math.min(50, estimatedRadius));
 };

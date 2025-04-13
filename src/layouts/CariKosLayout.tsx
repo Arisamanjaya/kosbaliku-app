@@ -9,9 +9,12 @@ import EmptyStateHandler from '../components/CariKos/components/EmptyStateHandle
 import { useRouter } from 'next/router';
 import MapKos from '../components/CariKos/MapKos';
 import { DEFAULT_RADIUS_KM } from '../utils/mapUtils';
+import { IconList, IconMap } from '@tabler/icons-react';
 
 const DEFAULT_LAT = -8.670458; // Denpasar, Bali latitude
 const DEFAULT_LNG = 115.212629; // Denpasar, Bali longitude
+
+type ViewMode = 'list' | 'map';
 
 export default function CariKosLayout() {
     const [kosList, setKosList] = useState<KosData[]>([]);
@@ -20,12 +23,20 @@ export default function CariKosLayout() {
     const [page, setPage] = useState(1);
     const [hasMore, setHasMore] = useState(true);
     const [filterCount, setFilterCount] = useState(0);
-    const isFirstLoad = useRef(true);
     const [isMapLoading, setIsMapLoading] = useState(true);
+    const [currentRadius, setCurrentRadius] = useState(DEFAULT_RADIUS_KM);
+    const [isRadiusLoading, setIsRadiusLoading] = useState(false);
+    // Add state for responsive view mode
+    const [activeView, setActiveView] = useState<ViewMode>('list');
+    
+    // Existing refs
+    const isFirstLoad = useRef(true);
+    const loadingRef = useRef(false);
+    const initialParamsProcessed = useRef(false);
+    
     const router = useRouter();
     const { lat, lng, locationName} = router.query;
-    const [isRadiusLoading, setIsRadiusLoading] = useState(false);
-    const [currentRadius, setCurrentRadius] = useState(DEFAULT_RADIUS_KM);
+    
     const [filters, setFilters] = useState({
         premium: false,
         tipe: "",
@@ -33,13 +44,8 @@ export default function CariKosLayout() {
         minPrice: 0,
         maxPrice: 0,
         fasilitas: [] as string[],
-        sortBy: "Terdekat"  // Changed from "Rekomen" to "Terdekat"
+        sortBy: "Terdekat"
     });
-
-    // Track if a fetch is in progress to prevent duplicate requests
-    // Add refs to track initialization state
-    const loadingRef = useRef(false);
-    const initialParamsProcessed = useRef(false);
 
     const loadKos = useCallback(async (isLoadMore = false, currentPage = 1, radius = currentRadius) => {
         if (loadingRef.current) {
@@ -163,6 +169,8 @@ export default function CariKosLayout() {
         console.log('Radius changed:', newRadius, 'km');
         setCurrentRadius(newRadius);
         setIsRadiusLoading(true);
+        
+        // Hanya reload data dengan radius baru tanpa mengubah zoom
         loadKos(false, 1, newRadius)
             .finally(() => setIsRadiusLoading(false));
     }, [loadKos]);
@@ -238,18 +246,39 @@ export default function CariKosLayout() {
         // This will trigger a re-fetch of data due to the useEffect watching filters
     };
 
+    // Toggle view mode for mobile/tablet
+    const toggleView = () => {
+        setActiveView(prev => prev === 'list' ? 'map' : 'list');
+    };
+
     return (
         <div className='flex flex-col h-screen'>
             {/* Fixed Navbar */}
             <Navbar />
             
+            {/* View Toggle Button - Only visible on smaller screens */}
+            <div className="fixed bottom-6 right-6 z-50 md:hidden">
+                <button 
+                    onClick={toggleView}
+                    className="bg-primary-500 text-white p-3 rounded-full shadow-lg flex items-center justify-center"
+                    aria-label={activeView === 'list' ? "Tampilkan Peta" : "Tampilkan Daftar"}
+                >
+                    {activeView === 'list' ? <IconMap size={24} /> : <IconList size={24} />}
+                </button>
+            </div>
+            
             {/* Main content area - takes remaining height */}
             <div className="flex flex-1 w-full overflow-hidden bg-slate-200">
-                {/* Left sidebar with listing - only this should scroll */}
-                <div className="max-w-2xl flex flex-col overflow-hidden bg-white">
+                {/* Left sidebar with listing - visible based on view mode on mobile */}
+                <div className={`
+                    ${activeView === 'list' ? 'block' : 'hidden'} 
+                    md:block 
+                    w-full md:w-1/2 lg:w-2/5 xl:w-1/3 2xl:max-w-2xl
+                    flex flex-col overflow-hidden bg-white
+                `}>
                     {/* Filter component - fixed at top */}
                     <div className="flex-shrink-0">
-                    <FilterKos 
+                        <FilterKos 
                             filterCount={filterCount}  
                             setFilterCount={setFilterCount}  
                             filters={filters}  
@@ -297,8 +326,13 @@ export default function CariKosLayout() {
                     </div>
                 </div>
                 
-                {/* Map Section - fixed and fills remaining space */}
-                <div className="flex-1 h-full">
+                {/* Map Section - visible based on view mode on mobile */}
+                <div className={`
+                    ${activeView === 'map' ? 'block' : 'hidden'} 
+                    md:block 
+                    w-full md:w-1/2 lg:w-3/5 xl:w-2/3 2xl:flex-1
+                    h-full
+                `}>
                     {isMapLoading && (
                         <div className="w-full h-full flex items-center justify-center bg-gray-100">
                             <div className="text-gray-500">Loading map...</div>

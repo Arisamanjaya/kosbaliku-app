@@ -117,59 +117,57 @@ export default function FilterKos({
 
     return (
         <>
-            <div
-                className={`w-full pl-6 md:px-8 lg:px-10 py-4 lg:py-6 bg-white sticky top-16 z-20 max-w-3xl transition-transform duration-300 ${
-                    isVisible ? "translate-y-0" : "-translate-y-full"
+            <div className={`w-full pl-6 md:px-8 lg:px-10 py-4 lg:py-6 bg-white sticky top-16 z-20 max-w-3xl transition-transform duration-300 ${isVisible ? "translate-y-0" : "-translate-y-full"
                 }`}
             >
-                <div className="flex gap-2 mx-auto text-sm lg:text-md">
-                    {/* Filter Button */}
+                <div className="flex gap-1 sm:gap-2 mx-auto text-xs sm:text-sm lg:text-md overflow-x-auto pb-2 hide-scrollbar">
+                    {/* Filter Button - ukuran lebih kecil di mobile */}
                     <button
-                        className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
+                        className={`border px-2 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1 sm:gap-2 whitespace-nowrap ${
                             filterCount > 0 ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
                         }`}
                         onClick={() => setIsModalOpen(true)}
                     >
                         {filterCount > 0 ? (
-                            <span className="font-bold text-sm bg-primary-500 px-1.5 text-white rounded-full">{filterCount}</span>
+                            <span className="font-bold text-xs bg-primary-500 px-1 text-white rounded-full">{filterCount}</span>
                         ) : (
-                            <IconAdjustmentsHorizontal size={16} />
+                            <IconAdjustmentsHorizontal size={14} className="sm:w-4 sm:h-4" />
                         )}
-                        Filter Kos
+                        Filter
                     </button>
 
-                    {/* Reset Filter Button */}
+                    {/* Reset Filter Button - ukuran lebih kecil di mobile */}
                     {filterCount > 0 && (
                         <button
                             onClick={handleResetFilters}
-                            className="border border-red-400 text-red-500 px-4 py-2 rounded-full flex items-center gap-2"
+                            className="border border-red-400 text-red-500 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1 sm:gap-2 whitespace-nowrap"
                         >
-                            <IconX size={16} />
+                            <IconX size={14} className="sm:w-4 sm:h-4" />
                             Hapus
                         </button>
                     )}
 
-                    {/* Premium Button */}
+                    {/* Premium Button - ukuran lebih kecil di mobile */}
                     <button
                         onClick={handlePremiumToggle}
-                        className={`border px-4 py-2 rounded-full flex items-center gap-2 ${
+                        className={`border px-2 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1 sm:gap-2 whitespace-nowrap ${
                             filters.premium ? "border-slate-800 text-slate-800" : "border-slate-300 text-slate-800"
                         }`}
                     >
                         {filters.premium ? (
-                            <IconFlameFilled size={16} className="text-secondary-500" />
+                            <IconFlameFilled size={14} className="sm:w-4 sm:h-4 text-secondary-500" />
                         ) : (
-                            <IconFlame size={16} className="text-secondary-500" />
+                            <IconFlame size={14} className="sm:w-4 sm:h-4 text-secondary-500" />
                         )}
                         Premium
                     </button>
 
-                    {/* Sort Button */}
+                    {/* Sort Button - ukuran lebih kecil di mobile */}
                     <button
                         onClick={handleSortClick}
-                        className="border border-slate-300 text-slate-800 px-4 py-2 rounded-full flex items-center gap-2"
+                        className="border border-slate-300 text-slate-800 px-2 sm:px-4 py-1.5 sm:py-2 rounded-full flex items-center gap-1 sm:gap-2 whitespace-nowrap"
                     >
-                        <IconArrowsUpDown size={16} />
+                        <IconArrowsUpDown size={14} className="sm:w-4 sm:h-4" />
                         {sortOption}
                     </button>
                 </div>
