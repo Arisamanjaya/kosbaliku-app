@@ -20,7 +20,7 @@ return (
 function MenuLinks() {
 const menus = [
     { name: "Beranda", path: "/" },
-    { name: "Cari Kos", path: "/cariKos" },
+    { name: "Cari Kos", path: "/CariKos" },
     { name: "Tentang Kami", path: "/tentangKami" },
     { name: "Blog", path: "/Blog" }
 ];
@@ -47,7 +47,7 @@ return (
 function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void }) {
 const menus = [
     { name: "Beranda", path: "/" },
-    { name: "Cari Kos", path: "/cariKos" },
+    { name: "Cari Kos", path: "/CariKos" },
     { name: "Tentang Kami", path: "/tentangKami" },
     { name: "Blog", path: "/Blog" }
 ];

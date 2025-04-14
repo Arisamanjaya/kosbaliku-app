@@ -173,7 +173,7 @@ const SearchPage = () => {
             
             if (location) {
                 router.push(
-                    `/cariKos?` + 
+                    `/CariKos?` + 
                     `lokasi=${encodeURIComponent(place.description)}` +
                     `&lat=${location.lat}` +
                     `&lng=${location.lng}` +
@@ -272,7 +272,7 @@ const SearchPage = () => {
                             onClick={() => {
                                 setSearchInput(location.name);
                                 router.push(
-                                    `/cariKos?` + 
+                                    `/CariKos?` + 
                                     `lokasi=${encodeURIComponent(location.name)}` +
                                     `&lat=${location.lat}` +
                                     `&lng=${location.lng}` +
