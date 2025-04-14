@@ -123,7 +123,7 @@ export default function CariKosLayout() {
             setError('Lokasi tidak valid');
             return;
         }
-
+    
         // Reset state
         setPage(1);
         setKosList([]);

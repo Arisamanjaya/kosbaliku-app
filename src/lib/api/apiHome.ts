@@ -14,9 +14,13 @@ export async function fetchRekomendasiKos(params: { lat: number; lng: number; ra
 
     if (!kosWithinRadius || kosWithinRadius.length === 0) return [];
 
+    // Filter out premium kos properties
     const nearbyKosIds = kosWithinRadius
+        .filter((kos: { kos_id: number; kos_premium: boolean }) => !kos.kos_premium) // Exclude premium kos
         .map((kos: { kos_id: number }) => kos.kos_id)
         .slice(0, 4);
+
+    if (nearbyKosIds.length === 0) return [];
 
     const { data: fullKosData, error: kosError } = await supabase
         .from('kos')

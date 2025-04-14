@@ -37,14 +37,8 @@ export default function KosPremium() {
         loadPremiumKos();
     }, []);
 
-    // Create URL params for "Lihat Semua" link
-    const searchParams = new URLSearchParams({
-        lokasi: DENPASAR_LOCATION.name,
-        lat: DENPASAR_LOCATION.lat.toString(),
-        lng: DENPASAR_LOCATION.lng.toString(),
-        locationName: DENPASAR_LOCATION.name,
-        premium: "true" // This will set premium filter to true
-    });
+    // Properly format URL parameters for "Lihat Semua" link
+    const cariKosUrl = `/cariKos?lokasi=${encodeURIComponent(DENPASAR_LOCATION.name)}&lat=${DENPASAR_LOCATION.lat}&lng=${DENPASAR_LOCATION.lng}&locationName=${encodeURIComponent(DENPASAR_LOCATION.name)}&premium=true`;
 
     return (
         <div className="w-full px-4 md:px-6 lg:px-10">
@@ -52,7 +46,7 @@ export default function KosPremium() {
                 <div className="flex justify-between items-center">
                     <h3 className="text-primary-500 text-lg font-semibold">Kos Premium Denpasar</h3>
                     <Link 
-                        href={`/cariKos?${searchParams.toString()}`}
+                        href={cariKosUrl}
                         className="text-base text-primary-500 underline"
                     >
                         Lihat Semua
