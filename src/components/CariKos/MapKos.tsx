@@ -336,8 +336,6 @@ const MapKos = ({
                     </OverlayView>
                 ))}
 
-// Inside the InfoWindow component in the render section
-
                 {selectedKos && (
                     <InfoWindow
                         position={{

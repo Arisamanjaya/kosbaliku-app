@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/router";
 import { IconMenu2, IconX, IconSearch } from "@tabler/icons-react";
+import Link from "next/link";
 
 function SearchBar({ onClick }: { onClick: () => void }) {
   return (
@@ -27,7 +28,7 @@ function MenuLinks() {
     <ul className="hidden lg:flex gap-6 text-sm font-normal text-slate-500">
       {menus.map((menu, index) => (
         <li key={index}>
-          <a href={menu.path} className="hover:text-primary-500 transition-colors">{menu.name}</a>
+          <Link href={menu.path} className="hover:text-primary-500 transition-colors">{menu.name}</Link>
         </li>
       ))}
     </ul>
@@ -61,10 +62,10 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       <ul className="flex flex-col items-center gap-6 text-lg font-medium text-primary-500">
         {menus.map((menu, index) => (
           <li key={index}>
-            <a href={menu.path}
+            <Link href={menu.path}
             className="hover:text-primary-700 transition-colors">
               {menu.name}
-            </a>
+            </Link>
           </li>
         ))}
       </ul>
@@ -111,9 +112,9 @@ export default function NavbarGlobal() {
       isScrolled ? "bg-white shadow-sm backdrop-blur-md" : "bg-white bg-opacity-80 backdrop-blur-sm shadow-sm"}`}>
       <div className="container mx-auto flex items-center justify-between max-w-7xl py-4">
         {/* Logo */}
-        <a href="/">
+        <Link href="/">
           <h1 className="text-2xl font-semibold text-primary-500">KosBaliku</h1>
-        </a>
+        </Link>
 
         {/* Search Bar */}
         <SearchBar onClick={() => router.push("/search")} />

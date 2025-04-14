@@ -3,6 +3,7 @@ import Link from "next/link";
 import { KosData } from "../../types/kosData";
 import { slugify } from "../../utils/slugify";
 import { useRouter } from 'next/router';
+import Image from "next/image";
 
 interface KosCardMobileProps {
     kos: KosData;
@@ -47,28 +48,31 @@ export default function KosCardMobile({ kos }: KosCardMobileProps) {
             <div className="w-full">
                 <div className="w-full h-28 rounded-xl bg-slate-300 relative overflow-hidden">
                     {/* Background blurred image - z-index 0 */}
-                    <img
-                        src={gambar || "/assets/placeholder.jpg"}
-                        alt=""
-                        className="w-full h-full absolute inset-0 object-cover blur-sm opacity-50 z-0"
-                        onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.onerror = null;
-                            target.src = "/assets/placeholder.jpg";
-                        }}
-                    />
-                    
-                    {/* Main image - z-index 1 */}
-                    <img
-                        src={gambar || "/assets/placeholder.jpg"}
-                        alt={kos_nama}
-                        className="w-full h-full object-contain rounded-2xl relative z-[1]"
-                        onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.onerror = null;
-                            target.src = "/assets/placeholder.jpg";
-                        }}
-                    />
+                    {gambar ? (
+                        <>
+                            {/* Background blurred image - z-index 0 */}
+                            <Image
+                                src={gambar}
+                                alt=""
+                                fill
+                                className="absolute inset-0 object-cover blur-sm opacity-50 z-0"
+                                onError={() => {/* Handle error silently */}}
+                            />
+                            
+                            {/* Main image - z-index 1 */}
+                            <Image
+                                src={gambar}
+                                alt={kos_nama || ""}
+                                fill
+                                className="object-contain rounded-2xl relative z-[1]"
+                                onError={() => {/* Handle error silently */}}
+                            />
+                        </>
+                    ) : (
+                        <div className="w-full h-full flex items-center justify-center bg-slate-200">
+                            <IconMapPin className="w-12 h-12 text-slate-400" />
+                        </div>
+                    )}
                     
                     {/* Premium badge - z-index 2 */}
                     {kos_premium && (

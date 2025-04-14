@@ -146,7 +146,7 @@ export default function CariKosLayout() {
         
         // Initial load
         loadKos(false, 1);
-    }, [router.isReady, router.query, loadKos]);
+    }, [router.isReady, router.query, loadKos, lat, lng]);
 
     // This effect handles location change (lat/lng) when they change
     useEffect(() => {
@@ -158,7 +158,7 @@ export default function CariKosLayout() {
         setPage(1);
         setKosList([]);
         loadKos(false, 1);
-    }, [lat, lng]); 
+    }, [lat, lng, loadKos]); 
 
     const handleRadiusChange = useCallback((newRadius: number) => {
         if (newRadius < 1 || newRadius > 50) {

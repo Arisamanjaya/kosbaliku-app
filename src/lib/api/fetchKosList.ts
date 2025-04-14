@@ -228,7 +228,7 @@ function mapKosData(data: any[]) {
             fasilitas: kos.kos_fasilitas?.map((f: any) => f.fasilitas.fasilitas_nama) || [],
             harga: kos.harga_kos?.[0]?.harga || 0,
             durasi: kos.harga_kos?.[0]?.tipe_durasi || "bulan",
-            gambar: kos.kos_images?.[0]?.url_foto || "public/assets/placeholder.jpg",
+            gambar: kos.kos_images?.[0]?.url_foto,
         };
     });
 }

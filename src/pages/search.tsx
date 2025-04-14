@@ -53,41 +53,47 @@ const POPULAR_LOCATIONS: PopularLocation[] = [
 ];
 
 const SearchPage = () => {
+    // State declarations
     const [searchInput, setSearchInput] = useState("");
     const [suggestedKos, setSuggestedKos] = useState<Kos[]>([]);
     const [placeSuggestions, setPlaceSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
     const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
     const [autocompleteService, setAutocompleteService] = useState<google.maps.places.AutocompleteService | null>(null);
+    
+    // Refs
     const mapServicesReady = useRef(false);
-
+    
+    // Hooks
     const router = useRouter();
-
     const { isLoaded, loadError } = useJsApiLoader(googleMapsApiOptions);
 
-    // Initialize Google Maps services only once when loaded
+    // Effect: Initialize Google Maps services
     useEffect(() => {
         if (isLoaded && !mapServicesReady.current && window.google?.maps?.places) {
-            setAutocompleteService(new window.google.maps.places.AutocompleteService());
-            mapServicesReady.current = true;
+            try {
+                setAutocompleteService(new window.google.maps.places.AutocompleteService());
+                mapServicesReady.current = true;
+            } catch (error) {
+                console.error('Error initializing Google Maps services:', error);
+            }
         }
     }, [isLoaded]);
 
-    // Handle place suggestions
+    // Effect: Handle place suggestions
     useEffect(() => {
-        if (!searchInput.trim() || !autocompleteService) {
-            setPlaceSuggestions([]);
-            return;
-        }
-
         const fetchPlaceSuggestions = async () => {
+            if (!searchInput.trim() || !autocompleteService) {
+                setPlaceSuggestions([]);
+                return;
+            }
+
             setIsLoadingPlaces(true);
             try {
                 const baliCenter = { lat: -8.4095, lng: 115.1889 };
-                
                 const request = {
                     input: searchInput,
                     location: new google.maps.LatLng(baliCenter),
-                    radius: 75000, // 75km radius
+                    radius: 75000,
                     componentRestrictions: { country: "ID" }
                 };
 
@@ -109,25 +115,61 @@ const SearchPage = () => {
             }
         };
 
-        // Debounce the API call
         const timeoutId = setTimeout(fetchPlaceSuggestions, 300);
         return () => clearTimeout(timeoutId);
-
     }, [searchInput, autocompleteService]);
 
-    // Handle location selection
+    // Effect: Fetch suggested kos from Supabase
+    useEffect(() => {
+        const fetchKosSuggestions = async () => {
+            if (!searchInput.trim()) {
+                setSuggestedKos([]);
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/kos-suggestions?query=${encodeURIComponent(searchInput)}`);
+                const data = await response.json();
+                setSuggestedKos(data.kos || []);
+            } catch (error) {
+                console.error("Failed to fetch kos data:", error);
+            }
+        };
+
+        const timeoutId = setTimeout(fetchKosSuggestions, 300);
+        return () => clearTimeout(timeoutId);
+    }, [searchInput]);
+
+    // Effect: Debug logging
+    useEffect(() => {
+        console.log('Search State:', {
+            isLoaded,
+            hasAutocomplete: !!autocompleteService,
+            inputLength: searchInput.length,
+            suggestionsCount: placeSuggestions.length,
+            isLoading: isLoadingPlaces
+        });
+    }, [isLoaded, autocompleteService, searchInput, placeSuggestions, isLoadingPlaces]);
+
+    // Effect: Cleanup
+    useEffect(() => {
+        return () => {
+            setAutocompleteService(null);
+            setPlaceSuggestions([]);
+        };
+    }, []);
+
+    // Handlers
     const handlePlaceSelection = async (place: google.maps.places.AutocompletePrediction) => {
         try {
             setSearchInput(place.description);
             
             if (!isLoaded) {
-                console.error('Google Maps API not loaded');
                 router.push(`/cariKos?lokasi=${encodeURIComponent(place.description)}`);
                 return;
             }
             
             const location = await getLocationDetails(place.place_id);
-            console.log('Location:', location); // Debug
             
             if (location) {
                 router.push(
@@ -146,56 +188,11 @@ const SearchPage = () => {
         }
     };
 
-    // Cleanup on unmount
-    useEffect(() => {
-        return () => {
-            setAutocompleteService(null);
-            setPlaceSuggestions([]);
-        };
-    }, []);
-
-    // Show loading or error states
+    // Error handling
     if (loadError) {
         console.error('Error loading Google Maps:', loadError);
         return <div>Error loading Google Maps</div>;
     }
-    
-
-    // Fetch suggested kos dari Supabase
-    useEffect(() => {
-        const fetchKosSuggestions = async () => {
-            if (searchInput.trim() === "") {
-                setSuggestedKos([]);
-                return;
-            }
-
-            try {
-                const response = await fetch(`/api/kos-suggestions?query=${encodeURIComponent(searchInput)}`);
-                const data = await response.json();
-                setSuggestedKos(data.kos || []);
-            } catch (error) {
-                console.error("Gagal mengambil data kos:", error);
-            }
-        };
-
-        const debounce = setTimeout(fetchKosSuggestions, 300);
-        return () => clearTimeout(debounce);
-    }, [searchInput]);
-
-    const handleSearchSubmit = () => {
-        router.push(`/cari?lokasi=${encodeURIComponent(searchInput)}`);
-    };
-    
-    // Add this after your state declarations
-    useEffect(() => {
-        console.log('Search State:', {
-            isLoaded,
-            hasAutocomplete: !!autocompleteService,
-            inputLength: searchInput.length,
-            suggestionsCount: placeSuggestions.length,
-            isLoading: isLoadingPlaces
-        });
-    }, [isLoaded, autocompleteService, searchInput, placeSuggestions, isLoadingPlaces]);
 
     return (
         <div className="min-h-screen bg-white max-w-2xl mx-auto">
