@@ -74,57 +74,57 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
     };
 
     const fasilitasIcons: Record<string, JSX.Element> = {
-        "Air Panas": <IconSoup size={24} />,
-        "AC": <IconAirConditioning size={24} />,
-        "Kasur": <IconBed size={24} />,
-        "Listrik Token": <IconBolt size={24} />,
-        "Lemari Baju": <IconServer size={24} />,
-        "K. Mandi Dalam": <IconBath size={24} />,
-        "Toilet Duduk": <IconToiletPaper size={24} />,
-        "Kipas Angin": <IconPropeller size={24} />,
-        "Meja": <IconStack size={24} />,
-        "Kursi": <IconArmchair size={24} />,
-        "TV": <IconDeviceTv size={24} />,
-        "Jendela": <IconWindow size={24} />,
-        "Wi-Fi": <IconWifi size={24} />,
-        "Kulkas Bersama": <IconFridge size={24} />,
-        "Taman": <IconPlant size={24} />,
-        "Toko Kelontong": <IconBuildingStore size={24} />,
-        "CCTV": <IconDeviceCctv size={24} />,
-        "Parkir Motor": <IconMotorbike size={24} />,
-        "Parkir Mobil": <IconCar size={24} />,
-        "Penjaga Kos": <IconUser size={24} />,
-        "Dapur Bersama": <IconChefHat size={24} />,
-        "Laundry": <IconWashMachine size={24} />,
-        "Tempat Sampah": <IconTrash size={24} />,
-        "Locker Bersama": <IconCircleKey size={24} />,
+        "Air Panas": <IconSoup size={20} className="sm:w-6 sm:h-6" />,
+        "AC": <IconAirConditioning size={20} className="sm:w-6 sm:h-6" />,
+        "Kasur": <IconBed size={20} className="sm:w-6 sm:h-6" />,
+        "Listrik Token": <IconBolt size={20} className="sm:w-6 sm:h-6" />,
+        "Lemari Baju": <IconServer size={20} className="sm:w-6 sm:h-6" />,
+        "K. Mandi Dalam": <IconBath size={20} className="sm:w-6 sm:h-6" />,
+        "Toilet Duduk": <IconToiletPaper size={20} className="sm:w-6 sm:h-6" />,
+        "Kipas Angin": <IconPropeller size={20} className="sm:w-6 sm:h-6" />,
+        "Meja": <IconStack size={20} className="sm:w-6 sm:h-6" />,
+        "Kursi": <IconArmchair size={20} className="sm:w-6 sm:h-6" />,
+        "TV": <IconDeviceTv size={20} className="sm:w-6 sm:h-6" />,
+        "Jendela": <IconWindow size={20} className="sm:w-6 sm:h-6" />,
+        "Wi-Fi": <IconWifi size={20} className="sm:w-6 sm:h-6" />,
+        "Kulkas Bersama": <IconFridge size={20} className="sm:w-6 sm:h-6" />,
+        "Taman": <IconPlant size={20} className="sm:w-6 sm:h-6" />,
+        "Toko Kelontong": <IconBuildingStore size={20} className="sm:w-6 sm:h-6" />,
+        "CCTV": <IconDeviceCctv size={20} className="sm:w-6 sm:h-6" />,
+        "Parkir Motor": <IconMotorbike size={20} className="sm:w-6 sm:h-6" />,
+        "Parkir Mobil": <IconCar size={20} className="sm:w-6 sm:h-6" />,
+        "Penjaga Kos": <IconUser size={20} className="sm:w-6 sm:h-6" />,
+        "Dapur Bersama": <IconChefHat size={20} className="sm:w-6 sm:h-6" />,
+        "Laundry": <IconWashMachine size={20} className="sm:w-6 sm:h-6" />,
+        "Tempat Sampah": <IconTrash size={20} className="sm:w-6 sm:h-6" />,
+        "Locker Bersama": <IconCircleKey size={20} className="sm:w-6 sm:h-6" />,
     };
 
     return (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-[9999] overflow-hidden">
             <div 
                 ref={modalRef}
-                className="bg-white w-full max-w-md mx-auto my-4 rounded-2xl shadow-xl flex flex-col max-h-[85vh] sm:max-h-[90vh] outline-none"
+                className="bg-white w-full max-w-md mx-auto my-2 rounded-2xl shadow-xl flex flex-col max-h-[75vh] sm:max-h-[85vh] outline-none"
                 tabIndex={-1}
             >
                 {/* Header Modal */}
-                <div className="flex justify-between items-center p-4 border-b sticky top-0 bg-white z-10">
-                    <h3 className="text-lg font-semibold">Filter Kos</h3>
+                <div className="flex justify-between items-center p-3 sm:p-4 border-b sticky top-0 bg-white z-10">
+                    <h3 className="text-base sm:text-lg font-semibold">Filter Kos</h3>
                     <button onClick={onClose} className="p-1 hover:bg-gray-100 rounded-full">
-                        <IconX size={20} />
+                        <IconX size={18} className="sm:w-5 sm:h-5" />
                     </button>
                 </div>
 
                 {/* Konten Modal dengan Scroll */}
-                <div className="flex-1 overflow-y-auto px-4 py-3">
+                <div className="flex-1 overflow-y-auto px-3 sm:px-4 py-2 sm:py-3">
                     {/* Tipe Kos */}
-                    <div className="mb-4">
-                        <span className="block mb-2 font-medium">Tipe Kos</span>
+                    <div className="mb-3 sm:mb-4">
+                        <span className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Tipe Kos</span>
                         <div className="flex gap-2">
                             {["Putra", "Putri", "Campur"].map((option) => (
                                 <button
                                     key={option}
-                                    className={`px-3 py-1 rounded border flex items-center gap-2 ${
+                                    className={`px-2 sm:px-3 py-1 rounded border flex items-center gap-1 sm:gap-2 text-xs sm:text-sm ${
                                         tipe === option ? "bg-primary-500 text-white" : "border-gray-300"
                                     }`}
                                     onClick={() => setTipe(tipe === option ? "" : option)}
@@ -136,10 +136,10 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
                     </div>
 
                     {/* Durasi Sewa */}
-                    <div className="mb-4">
-                        <span className="block mb-2 font-medium">Durasi Sewa</span>
+                    <div className="mb-3 sm:mb-4">
+                        <span className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Durasi Sewa</span>
                         <select
-                            className="border p-2 rounded w-full"
+                            className="border p-1.5 sm:p-2 rounded w-full text-xs sm:text-sm"
                             value={durasi}
                             onChange={(e) => setDurasi(e.target.value)}
                         >
@@ -151,18 +151,18 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
                     </div>
 
                     {/* Harga Kos */}
-                    <div className="mb-4">
-                        <span className="block mb-2 font-medium">Harga Kos</span>
+                    <div className="mb-3 sm:mb-4">
+                        <span className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Harga Kos</span>
                         <div className="grid grid-cols-2 gap-2">
                             {/* Input Harga Min */}
                             <div className="flex flex-col">
-                                <label className="text-sm font-medium text-gray-700 mb-1">Harga Min</label>
+                                <label className="text-xs sm:text-sm font-medium text-gray-700 mb-0.5 sm:mb-1">Harga Min</label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-2 text-gray-500">Rp</span>
+                                    <span className="absolute left-2 sm:left-3 top-1.5 sm:top-2 text-gray-500 text-xs sm:text-sm">Rp</span>
                                     <input
                                         type="text"
                                         placeholder="0"
-                                        className="border p-2 pl-10 rounded w-full"
+                                        className="border p-1.5 sm:p-2 pl-7 sm:pl-10 rounded w-full text-xs sm:text-sm"
                                         value={hargaMin.toLocaleString("id-ID")}
                                         onChange={(e) => {
                                             const value = e.target.value.replace(/\D/g, "");
@@ -174,13 +174,13 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
 
                             {/* Input Harga Max */}
                             <div className="flex flex-col">
-                                <label className="text-sm font-medium text-gray-700 mb-1">Harga Max</label>
+                                <label className="text-xs sm:text-sm font-medium text-gray-700 mb-0.5 sm:mb-1">Harga Max</label>
                                 <div className="relative">
-                                    <span className="absolute left-3 top-2 text-gray-500">Rp</span>
+                                    <span className="absolute left-2 sm:left-3 top-1.5 sm:top-2 text-gray-500 text-xs sm:text-sm">Rp</span>
                                     <input
                                         type="text"
                                         placeholder="0"
-                                        className="border p-2 pl-10 rounded w-full"
+                                        className="border p-1.5 sm:p-2 pl-7 sm:pl-10 rounded w-full text-xs sm:text-sm"
                                         value={hargaMax.toLocaleString("id-ID")}
                                         onChange={(e) => {
                                             const value = e.target.value.replace(/\D/g, "");
@@ -193,13 +193,13 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
                     </div>
 
                     {/* Fasilitas Kamar */}
-                    <div className="mb-4">
-                        <span className="block mb-2 font-medium">Fasilitas Kamar</span>
-                        <div className="grid grid-cols-3 gap-2">
+                    <div className="mb-3 sm:mb-4">
+                        <span className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Fasilitas Kamar</span>
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                             {["AC", "Air Panas", "Kasur", "Listrik Token", "Lemari Baju", "K. Mandi Dalam", "Toilet Duduk", "Kipas Angin", "Meja", "Kursi", "TV", "Jendela"].map((fasilitas) => (
                                 <button
                                     key={fasilitas}
-                                    className={`px-3 py-4 rounded border flex flex-col items-center gap-2 justify-center text-xs sm:text-sm text-slate-500 ${
+                                    className={`px-1 sm:px-3 py-2 sm:py-4 rounded border flex flex-col items-center gap-1 sm:gap-2 justify-center text-[10px] sm:text-xs text-slate-500 ${
                                         selectedFasilitas.includes(fasilitas) ? "bg-primary-500 text-white" : "border-gray-300"
                                     }`}
                                     onClick={() => toggleFasilitas(fasilitas)}
@@ -212,13 +212,13 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
                     </div>
 
                     {/* Fasilitas Bersama */}
-                    <div className="mb-4">
-                        <span className="block my-2 font-medium">Fasilitas Bersama</span>
-                        <div className="grid grid-cols-3 gap-2">
+                    <div className="mb-3 sm:mb-4">
+                        <span className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Fasilitas Bersama</span>
+                        <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
                             {["Wi-Fi", "Kulkas Bersama", "Taman", "Toko Kelontong", "Dapur Bersama", "CCTV", "Parkir Motor", "Parkir Mobil", "Penjaga Kos", "Laundry", "Tempat Sampah", "Locker Bersama"].map((fasilitas) => (
                                 <button
                                     key={fasilitas}
-                                    className={`px-3 py-4 rounded border flex flex-col items-center gap-2 justify-center text-xs sm:text-sm text-slate-500 ${
+                                    className={`px-1 sm:px-3 py-2 sm:py-4 rounded border flex flex-col items-center gap-1 sm:gap-2 justify-center text-[10px] sm:text-xs text-slate-500 ${
                                         selectedFasilitas.includes(fasilitas) ? "bg-primary-500 text-white" : "border-gray-300"
                                     }`}
                                     onClick={() => toggleFasilitas(fasilitas)}
@@ -232,9 +232,9 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
                 </div>
 
                 {/* Tombol Terapkan - sticky di bagian bawah */}
-                <div className="sticky bottom-0 bg-white p-4 border-t z-10">
+                <div className="sticky bottom-0 bg-white p-3 sm:p-4 border-t z-10">
                     <button
-                        className="w-full py-3 rounded-lg bg-primary-500 text-white font-medium"
+                        className="w-full py-2 sm:py-3 rounded-lg bg-primary-500 text-white font-medium text-sm sm:text-base"
                         onClick={handleApply}
                     >
                         Terapkan

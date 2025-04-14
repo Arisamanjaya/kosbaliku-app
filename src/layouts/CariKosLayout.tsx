@@ -278,7 +278,7 @@ export default function CariKosLayout() {
                         />
                     </div>
                     
-                    {/* Scrollable list container - Perbaikan utama ada di sini */}
+                    {/* Scrollable list container */}
                     <div className="flex-1 overflow-y-auto h-0 min-h-0">
                         {error ? (
                             <p className="text-center text-red-500 p-4">{error}</p>

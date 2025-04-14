@@ -2,6 +2,7 @@ import { KosData } from "../../types/kosData";
 import Link from "next/link";
 import { slugify } from "../../utils/slugify";
 import { IconMapPin } from "@tabler/icons-react";
+import { useRouter } from 'next/router';
 
 interface KosCardProps {
     kos: KosData;
@@ -21,32 +22,57 @@ export default function KosCard({ kos }: KosCardProps) {
         gambar,
     } = kos;
 
+    const router = useRouter();
+    const { lat, lng, locationName } = router.query;
+    
+    // Create a valid slug and check if kos_id exists
+    const createValidSlug = () => {
+        if (!kos_id) {
+            console.error("Invalid kos_id:", kos_id);
+            return `invalid-kos`;
+        }
+        return slugify(kos_nama || "kos", kos_id);
+    };
+    
+    // Create source location parameter if available
+    const sourceLocationParam = lat && lng && locationName ? 
+        `?sourceLocation=${encodeURIComponent(JSON.stringify({
+            lat: parseFloat(lat as string),
+            lng: parseFloat(lng as string),
+            name: locationName as string
+        }))}` : '';
+
     return (
-        <Link href={`/kos/${slugify(kos_nama, kos_id)}`} className="cursor-pointer">
+        <Link href={`/kos/${createValidSlug()}${sourceLocationParam}`} className="cursor-pointer">
             <div className="w-full">
                 <div className="w-full h-40 rounded-2xl overflow-hidden bg-slate-300 relative">
+                    {/* Background blurred image - z-index 0 */}
+                    <img
+                        src={gambar || "/assets/placeholder.jpg"}
+                        alt=""
+                        className="w-full h-full absolute inset-0 object-cover blur-sm opacity-50 z-0"
+                        onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.onerror = null;
+                            target.src = "/assets/placeholder.jpg";
+                        }}
+                    />
+                    
+                    {/* Main image - z-index 1 */}
                     <img
                         src={gambar || "/assets/placeholder.jpg"}
                         alt={kos_nama}
-                        className="w-full h-full object-contain rounded-2xl z-10 relative"
+                        className="w-full h-full object-contain rounded-2xl relative z-[1]"
                         onError={(e) => {
                             const target = e.target as HTMLImageElement;
-                            target.onerror = null; // Hindari infinite loop error
-                            target.src = "/assets/placeholder.jpg"; // Ganti dengan gambar default
+                            target.onerror = null;
+                            target.src = "/assets/placeholder.jpg";
                         }}
                     />
-                    <img
-                        src={gambar || "/assets/placeholder.jpg"}
-                        alt={kos_nama}
-                        className="w-full h-full  rounded-2xl absolute object-cover inset-0 blur-sm opacity-50 z-0"
-                        onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.onerror = null; // Hindari infinite loop error
-                            target.src = "/assets/placeholder.jpg"; // Ganti dengan gambar default
-                        }}
-                    />
+                    
+                    {/* Premium badge - z-index 2 */}
                     {kos_premium && (
-                        <div className="absolute top-2 left-2 bg-rose-500 text-white text-xs px-2 py-1 rounded z-10">
+                        <div className="absolute top-2 left-2 bg-rose-500 text-white text-xs px-2 py-1 rounded z-[2]">
                             Premium
                         </div>
                     )}
@@ -66,7 +92,7 @@ export default function KosCard({ kos }: KosCardProps) {
                         <p className="text-sm font-medium">{kos_lokasi}</p>
                     </div>
                     <p className="text-xs font-light truncate text-slate-500">
-                        {fasilitas.length > 0 ? fasilitas.join(" • ") : "Tidak ada fasilitas"}
+                        {fasilitas && fasilitas.length > 0 ? fasilitas.join(" • ") : "Tidak ada fasilitas"}
                     </p>
                 </div>
                 <h5 className="text-secondary-500">
