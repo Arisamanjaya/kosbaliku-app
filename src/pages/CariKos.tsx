@@ -1,7 +1,7 @@
 import CariKosLayout from "../layouts/CariKosLayout";
 import Head from "next/head";
 
-export default function CariKosPage() {
+export default function cariKosPage() {
     return (
         <>
         <Head>

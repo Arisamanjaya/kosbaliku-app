@@ -2,7 +2,7 @@ import BaseLayout from "@/src/layouts/BaseLayout";
 import Head from "next/head";
 import LandingPageLayout from "../layouts/LandingPageLayout";
 
-export default function Home() {
+export default function HomePage() {
   return (
     <>
     <Head>
