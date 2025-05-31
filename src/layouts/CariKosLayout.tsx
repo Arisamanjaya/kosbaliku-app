@@ -17,6 +17,7 @@ const DEFAULT_LNG = 115.212629; // Denpasar, Bali longitude
 type ViewMode = 'list' | 'map';
 
 export default function CariKosLayout() {
+    const PAGE_SIZE = 10;
     const [kosList, setKosList] = useState<KosData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -26,6 +27,7 @@ export default function CariKosLayout() {
     const [isMapLoading, setIsMapLoading] = useState(true);
     const [currentRadius, setCurrentRadius] = useState(DEFAULT_RADIUS_KM);
     const [isRadiusLoading, setIsRadiusLoading] = useState(false);
+    const [totalCount, setTotalCount] = useState(0);
     // Add state for responsive view mode
     const [activeView, setActiveView] = useState<ViewMode>('list');
     
@@ -69,7 +71,7 @@ export default function CariKosLayout() {
                 lng: currentLng,
                 radius, 
                 page: currentPage,
-                limit: 10,
+                limit: PAGE_SIZE,
                 premium: filters.premium,
                 tipe: filters.tipe,
                 durasi: filters.durasi,
@@ -82,17 +84,18 @@ export default function CariKosLayout() {
             if (Array.isArray(response)) {
                 setKosList([]);
                 setHasMore(false);
+                setTotalCount(0);
             } else {
                 setKosList(prevList => {
                     if (!isLoadMore) return response.data;
+                    // Combine previous and new items, removing duplicates
                     const newList = [...prevList, ...response.data];
                     return Array.from(new Map(newList.map(item => [item.kos_id, item])).values());
                 });
                 
-                // Update hasMore based on the total count
-                const currentTotal = isLoadMore ? 
-                    (currentPage * 10) : response.data.length;
-                setHasMore(response.totalCount != null && currentTotal < response.totalCount);
+                // Update total count and hasMore status
+                setTotalCount(response.totalCount || 0);
+                setHasMore(response.data.length === PAGE_SIZE);
                 
                 console.log(`Loaded ${response.data.length} items. Total: ${response.totalCount}`);
             }
@@ -306,6 +309,8 @@ export default function CariKosLayout() {
                                     onLoadMore={handleLoadMore} 
                                     hasMore={hasMore}
                                     loading={loading}
+                                    totalCount={totalCount}
+                                    currentCount={kosList.length}
                                 />
                                 {loading && page > 1 && (
                                     <p className="text-center text-gray-500 py-2">Memuat data tambahan...</p>

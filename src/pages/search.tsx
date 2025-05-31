@@ -54,6 +54,7 @@ const POPULAR_LOCATIONS: PopularLocation[] = [
 
 const SearchPage = () => {
     // State declarations
+    const searchInputRef = useRef<HTMLInputElement>(null);
     const [searchInput, setSearchInput] = useState("");
     const [suggestedKos, setSuggestedKos] = useState<Kos[]>([]);
     const [placeSuggestions, setPlaceSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
@@ -194,24 +195,27 @@ const SearchPage = () => {
         return <div>Error loading Google Maps</div>;
     }
 
+    // Auto focus the search input when the page loads
+    useEffect(() => {
+        if (searchInputRef.current) {
+        searchInputRef.current.focus();
+        }
+    }, []);
+
     return (
         <div className="min-h-screen bg-white max-w-2xl mx-auto">
-            {/* Header Search */}
             <div className="flex items-center px-4 py-3 border-b">
                 <button onClick={() => router.back()}>
                     <IconArrowLeft className="text-gray-500 mr-2" />
                 </button>
                 <input
-                    type="text"
-                    value={searchInput}
-                    onChange={(e) => setSearchInput(e.target.value)}
-                    placeholder="Masukan nama lokasi/area/alamat"
-                    className="w-full flex-1 text-sm outline-none"
-                    onKeyDown={(e) => {
-                        if (e.key === "Enter") {
-                            e.preventDefault(); // Prevent form submission
-                        }
-                    }}
+                ref={searchInputRef}
+                type="text"
+                value={searchInput}
+                onChange={(e) => setSearchInput(e.target.value)}
+                placeholder="Masukan nama lokasi/area/alamat"
+                className="w-full flex-1 text-sm outline-none"
+                onKeyDown={(e) => e.key === "Enter" && e.preventDefault()}
                 />
                 {searchInput && (
                     <button onClick={() => setSearchInput("")}>

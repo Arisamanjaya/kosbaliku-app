@@ -1,15 +1,25 @@
 import KosCard from '../Cards/KosCard';
 import KosCardMobile from '../Cards/KosCardMobile';
 import { KosData } from '../../types/kosData';
+import { IconLoader2 } from '@tabler/icons-react';
 
 interface ListKosProps {
-    kosList?: KosData[];
-    onLoadMore?: () => void; 
-    hasMore?: boolean;
-    loading?: boolean;
+    kosList: KosData[];
+    onLoadMore: () => void;
+    hasMore: boolean;
+    loading: boolean;
+    totalCount?: number;
+    currentCount?: number;
 }
 
-export default function ListKos({ kosList = [], onLoadMore, hasMore = false, loading = false }: ListKosProps) {
+export default function ListKos({ 
+    kosList, 
+    onLoadMore, 
+    hasMore, 
+    loading,
+    totalCount = 0,
+    currentCount = 0
+}: ListKosProps) {
     console.log('kosList in ListKos:', kosList);
 
     if (!kosList || kosList.length === 0) {
@@ -32,13 +42,24 @@ export default function ListKos({ kosList = [], onLoadMore, hasMore = false, loa
             </div>
 
             {hasMore && (
-                <button 
-                    onClick={onLoadMore}
-                    disabled={loading}
-                    className="w-full text-center py-4 text-primary-600 hover:text-primary-700 disabled:text-gray-400 cursor-pointer disabled:cursor-not-allowed"
-                >
-                    {loading ? "Sedang memuat..." : "Muat lebih banyak"}
-                </button>
+                <div className="mt-6 text-center">
+                    <button 
+                        onClick={onLoadMore}
+                        disabled={loading}
+                        className="inline-flex items-center justify-center gap-2 px-6 py-3 text-white hover:text-white disabled:text-gray-500 bg-primary-500 hover:bg-primary-100 disabled:bg-gray-50 rounded-lg transition-colors"
+                    >
+                        {loading ? (
+                            <>
+                                <IconLoader2 className="w-4 h-4 animate-spin" />
+                                <span>Sedang memuat...</span>
+                            </>
+                        ) : (
+                            <>
+                                <span>Muat lebih banyak</span>
+                            </>
+                        )}
+                    </button>
+                </div>
             )}
         </div>
     );

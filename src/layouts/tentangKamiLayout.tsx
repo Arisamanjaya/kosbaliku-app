@@ -9,7 +9,7 @@ export default function TentangKamiLayout() {
                     <div className="relative w-full md:w-4/5 lg:w-full max-w-[500px] mx-auto aspect-square">
                         <div className="relative w-full h-full overflow-hidden rounded-2xl">
                             <Image
-                                src="/assets/image_tentangKami.jpg"
+                                src="/assets/image_tentangKami.png"
                                 alt="KosBaliku Team"
                                 fill
                                 className="object-contain"
