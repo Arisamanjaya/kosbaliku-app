@@ -97,7 +97,7 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
         "Dapur Bersama": <IconChefHat size={20} className="sm:w-6 sm:h-6" />,
         "Laundry": <IconWashMachine size={20} className="sm:w-6 sm:h-6" />,
         "Tempat Sampah": <IconTrash size={20} className="sm:w-6 sm:h-6" />,
-        "Locker Bersama": <IconCircleKey size={20} className="sm:w-6 sm:h-6" />,
+        "Loker Bersama": <IconCircleKey size={20} className="sm:w-6 sm:h-6" />,
     };
 
     return (
@@ -215,7 +215,7 @@ export default function FilterModal({ onClose, onApply, initialFilters }: Filter
                     <div className="mb-3 sm:mb-4">
                         <span className="block mb-1 sm:mb-2 font-medium text-sm sm:text-base">Fasilitas Bersama</span>
                         <div className="grid grid-cols-3 gap-1.5 sm:gap-2">
-                            {["Wi-Fi", "Kulkas Bersama", "Taman", "Toko Kelontong", "Dapur Bersama", "CCTV", "Parkir Motor", "Parkir Mobil", "Penjaga Kos", "Laundry", "Tempat Sampah", "Locker Bersama"].map((fasilitas) => (
+                            {["Wi-Fi", "Kulkas Bersama", "Taman", "Toko Kelontong", "Dapur Bersama", "CCTV", "Parkir Motor", "Parkir Mobil", "Penjaga Kos", "Laundry", "Tempat Sampah", "Loker Bersama"].map((fasilitas) => (
                                 <button
                                     key={fasilitas}
                                     className={`px-1 sm:px-3 py-2 sm:py-4 rounded border flex flex-col items-center gap-1 sm:gap-2 justify-center text-[10px] sm:text-xs text-slate-500 ${

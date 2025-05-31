@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 interface EmptyStateHandlerProps {
     isSearchEmpty?: boolean;  // Kosong karena hasil pencarian
     isFilterEmpty?: boolean;  // Kosong karena filter tidak sesuai
@@ -51,9 +53,20 @@ export default function EmptyStateHandler({
     }
 
     return (
-        <div className="text-center text-gray-500 p-4">
-            <p className="font-medium text-lg">{message}</p>
-            {subMessage && <p className="mt-2 text-sm text-gray-400">{subMessage}</p>}
+        <div className="flex flex-col items-center justify-center text-center text-gray-500 p-4 space-y-4 ">
+            <div className="relative w-64 h-48">
+                <Image
+                    src="/assets/image_errorState.png"
+                    alt="No results found"
+                    fill
+                    priority
+                    className="object-contain"
+                />
+            </div>
+            <div>
+                <p className="font-medium text-lg">{message}</p>
+                {subMessage && <p className="mt-2 text-sm text-gray-400">{subMessage}</p>}
+            </div>
         </div>
     );
 }

@@ -1,4 +1,4 @@
-import { IconAirConditioning, IconArmchair, IconBath, IconBed, IconBolt, IconBuildingStore, IconCar, IconChefHat, IconDeviceCctv, IconDeviceTv, IconFridge, IconMotorbike, IconPlant, IconPropeller, IconServer, IconSoup, IconStack, IconToiletPaper, IconUser, IconWashMachine, IconWifi, IconWindow } from '@tabler/icons-react';
+import { IconAirConditioning, IconArmchair, IconBath, IconBed, IconBolt, IconBuildingStore, IconCar, IconChefHat, IconDeviceCctv, IconDeviceTv, IconFridge, IconMotorbike, IconPlant, IconPropeller, IconServer, IconSoup, IconStack, IconToiletPaper, IconUser, IconWashMachine, IconWifi, IconWindow, IconTrash,  IconCircleKey } from '@tabler/icons-react';
 import { JSX } from 'react';
 
 const fasilitasIcons: Record<string, JSX.Element> = {
@@ -23,7 +23,9 @@ const fasilitasIcons: Record<string, JSX.Element> = {
     "Parkir Mobil": <IconCar size={24} className="text-slate-500" />,
     "Penjaga Kos": <IconUser size={24} className="text-slate-500" />,
     "Dapur Bersama": <IconChefHat size={24} className="text-slate-500" />,
-    "Laundry": <IconWashMachine size={24} className="text-slate-500" />,
+    "Laundry": <IconWashMachine size={24} className="text-slate-500"/>,
+    "Loker Bersama": <IconCircleKey size={24} className="text-slate-500"/>,
+    "Tempat Sampah": <IconTrash size={24} className="text-slate-500"/>,
 };
 
 export default fasilitasIcons;
