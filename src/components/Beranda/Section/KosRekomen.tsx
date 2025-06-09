@@ -37,7 +37,7 @@ export default function KosRekomen() {
     }, []);
 
     // Create URL for "Lihat Semua" without premium filter
-    const cariKosUrl = `/cariKos?lokasi=${encodeURIComponent(DENPASAR_LOCATION.name)}&lat=${DENPASAR_LOCATION.lat}&lng=${DENPASAR_LOCATION.lng}&locationName=${encodeURIComponent(DENPASAR_LOCATION.name)}`;
+    const cariKosUrl = `/CariKos?lokasi=${encodeURIComponent(DENPASAR_LOCATION.name)}&lat=${DENPASAR_LOCATION.lat}&lng=${DENPASAR_LOCATION.lng}&locationName=${encodeURIComponent(DENPASAR_LOCATION.name)}`;
 
     return (
         <div className="w-full px-4 md:px-6 lg:px-10">
