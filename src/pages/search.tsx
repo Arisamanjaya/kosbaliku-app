@@ -54,13 +54,12 @@ const POPULAR_LOCATIONS: PopularLocation[] = [
 
 const SearchPage = () => {
     // State declarations
-    const searchInputRef = useRef<HTMLInputElement>(null);
-    const [searchInput, setSearchInput] = useState("");
-    const [suggestedKos, setSuggestedKos] = useState<Kos[]>([]);
+    const [searchInput, setSearchInput] = useState('');
     const [placeSuggestions, setPlaceSuggestions] = useState<google.maps.places.AutocompletePrediction[]>([]);
+    const [suggestedKos, setSuggestedKos] = useState<Kos[]>([]);
     const [isLoadingPlaces, setIsLoadingPlaces] = useState(false);
     const [autocompleteService, setAutocompleteService] = useState<google.maps.places.AutocompleteService | null>(null);
-    
+    const searchInputRef = useRef<HTMLInputElement>(null);
     // Refs
     const mapServicesReady = useRef(false);
     
@@ -70,18 +69,17 @@ const SearchPage = () => {
 
     // Effect: Initialize Google Maps services
     useEffect(() => {
-        if (isLoaded && !mapServicesReady.current && window.google?.maps?.places) {
+        if (isLoaded && !autocompleteService && window.google?.maps?.places) {
             try {
                 setAutocompleteService(new window.google.maps.places.AutocompleteService());
-                mapServicesReady.current = true;
             } catch (error) {
                 console.error('Error initializing Google Maps services:', error);
             }
         }
-    }, [isLoaded]);
+    }, [isLoaded, autocompleteService]);
 
     // Effect: Handle place suggestions
-    useEffect(() => {
+     useEffect(() => {
         const fetchPlaceSuggestions = async () => {
             if (!searchInput.trim() || !autocompleteService) {
                 setPlaceSuggestions([]);
@@ -159,7 +157,12 @@ const SearchPage = () => {
             setPlaceSuggestions([]);
         };
     }, []);
-
+    
+    useEffect(() => {
+        if (searchInputRef.current) {
+            searchInputRef.current.focus();
+        }
+    }, []);
     // Handlers
     const handlePlaceSelection = async (place: google.maps.places.AutocompletePrediction) => {
         try {
@@ -194,13 +197,6 @@ const SearchPage = () => {
         console.error('Error loading Google Maps:', loadError);
         return <div>Error loading Google Maps</div>;
     }
-
-    // Auto focus the search input when the page loads
-    useEffect(() => {
-        if (searchInputRef.current) {
-        searchInputRef.current.focus();
-        }
-    }, []);
 
     return (
         <div className="min-h-screen bg-white max-w-2xl mx-auto">
