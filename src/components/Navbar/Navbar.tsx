@@ -23,7 +23,7 @@ function MenuLinks() {
     { name: "Beranda", path: "/" },
     { name: "Cari Kos", path: "/CariKos" },
     { name: "Tentang Kami", path: "/tentangKami" },
-    { name: "Blog", path: "/Blog" }
+    // { name: "Blog", path: "/Blog" }
   ];
   return (
     <ul className="hidden lg:flex gap-6 text-sm font-normal text-slate-500">
@@ -50,7 +50,7 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
     { name: "Beranda", path: "/" },
     { name: "Cari Kos", path: "/CariKos" },
     { name: "Tentang Kami", path: "/tentangKami" },
-    { name: "Blog", path: "/Blog" }
+    // { name: "Blog", path: "/Blog" }
   ];
   return (
     <div className={`fixed flex-col flex top-0 right-0 h-screen w-3/4 bg-white shadow-lg transition-transform duration-300 ease-in-out lg:hidden ${

@@ -184,7 +184,7 @@ export default function LokasiKos({ kos }: LokasiKosProps) {
         <div className="mb-3">
           <button
             onClick={toggleDirections}
-            className="flex items-center gap-1 text-primary-600 text-sm font-medium hover:underline"
+            className="flex items-center gap-1 text-secondary-600 text-sm font-medium hover:underline"
           >
             <IconRoute size={16} />
             {showDirections ? "Tampilkan Peta Lokasi" : "Tampilkan Rute Perjalanan"}
