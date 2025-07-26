@@ -1,12 +1,16 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  reactStrictMode: true,
   images: {
-    domains: [
-      "qjhkjpgbidjkywtgvmig.supabase.co"
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'qjhkjpgbidjkywtgvmig.supabase.co',
+        port: '',
+        pathname: '/storage/v1/object/public/kos-images/**',
+      }
     ],
-    dangerouslyAllowSVG: true,
-    minimumCacheTTL: 60,
   },
-};
+}
 
-module.exports = nextConfig;
+module.exports = nextConfig
