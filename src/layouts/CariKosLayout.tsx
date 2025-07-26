@@ -15,6 +15,7 @@ const DEFAULT_LAT = -8.670458; // Denpasar, Bali latitude
 const DEFAULT_LNG = 115.212629; // Denpasar, Bali longitude
 
 type ViewMode = 'list' | 'map';
+type SortOption = 'Terdekat' | 'Harga Terendah' | 'Harga Tertinggi';
 
 export default function CariKosLayout() {
     const PAGE_SIZE = 10;
@@ -63,50 +64,60 @@ export default function CariKosLayout() {
         setLoading(true);
         
         try {
-            console.log(`Loading page ${currentPage}, isLoadMore: ${isLoadMore}, radius: ${radius}km`);
-            console.log('Applying filters:', filters);
-            
-            const response = await fetchKosList({
-                lat: currentLat,
-                lng: currentLng,
-                radius, 
-                page: currentPage,
-                limit: PAGE_SIZE,
-                premium: filters.premium,
-                tipe: filters.tipe,
-                durasi: filters.durasi,
-                minPrice: filters.minPrice,
-                maxPrice: filters.maxPrice === 0 ? Infinity : filters.maxPrice,
-                fasilitas: filters.fasilitas,
-                sortBy: filters.sortBy
-            });
-    
-            if (Array.isArray(response)) {
-                setKosList([]);
-                setHasMore(false);
-                setTotalCount(0);
-            } else {
-                setKosList(prevList => {
-                    if (!isLoadMore) return response.data;
-                    // Combine previous and new items, removing duplicates
-                    const newList = [...prevList, ...response.data];
-                    return Array.from(new Map(newList.map(item => [item.kos_id, item])).values());
-                });
-                
-                // Update total count and hasMore status
-                setTotalCount(response.totalCount || 0);
-                setHasMore(response.data.length === PAGE_SIZE);
-                
-                console.log(`Loaded ${response.data.length} items. Total: ${response.totalCount}`);
-            }
-        } catch (err) {
-            console.error('Error loading kos:', err);
-            setError(err instanceof Error ? err.message : 'Gagal memuat data kos');
-        } finally {
-            setLoading(false);
-            loadingRef.current = false;
+        console.log(`Loading page ${currentPage}, isLoadMore: ${isLoadMore}, radius: ${radius}km`);
+        console.log('Applying filters:', filters);
+        
+        const response = await fetchKosList({
+            lat: currentLat,
+            lng: currentLng,
+            radius, 
+            page: currentPage,
+            limit: PAGE_SIZE,
+            premium: filters.premium,
+            tipe: filters.tipe,
+            durasi: filters.durasi,
+            minPrice: filters.minPrice,
+            maxPrice: filters.maxPrice === 0 ? Infinity : filters.maxPrice,
+            fasilitas: filters.fasilitas,
+            sortBy: filters.sortBy as SortOption // Ensure sortBy is a valid SortOption
+        });
+
+        // Check if response is valid
+        if (!response || !response.data) {
+            setKosList([]);
+            setHasMore(false);
+            setTotalCount(0);
+            return;
         }
-    }, [lat, lng, filters, currentRadius]);
+
+        // Update state based on response
+        setKosList(prevList => {
+            if (!isLoadMore) return response.data;
+            
+            // Combine previous and new items, removing duplicates
+            const newList = [...prevList, ...response.data];
+            return Array.from(
+                new Map(newList.map(item => [item.kos_id, item])).values()
+            );
+        });
+        
+        // Update pagination info
+        setTotalCount(response.totalCount || 0);
+        setHasMore(response.data.length === PAGE_SIZE);
+        
+        console.log(`Loaded ${response.data.length} items. Total: ${response.totalCount}`);
+
+    } catch (err) {
+        console.error('Error loading kos:', err);
+        setError(err instanceof Error ? err.message : 'Gagal memuat data kos');
+        setKosList([]);
+        setHasMore(false);
+        setTotalCount(0);
+    } finally {
+        setLoading(false);
+        loadingRef.current = false;
+    }
+}, [lat, lng, filters, currentRadius]);
 
     // Update the useEffect that handles URL params
     useEffect(() => {

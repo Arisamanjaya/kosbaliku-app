@@ -4,10 +4,10 @@ import { KosData } from '../../types/kosData';  // optional kalau kamu mau stric
 export async function fetchRekomendasiKos(params: { lat: number; lng: number; radius: number }): Promise<KosData[]> {
     // First get kos within radius with distance calculation
     const { data: kosWithinRadius, error: radiusError } = await supabase
-        .rpc('get_kos_within_radius', {
+        .rpc('get_kos_within_radius_haversine', {
             user_lat: params.lat,
             user_lng: params.lng,
-            search_radius: params.radius
+            search_radius_km: params.radius
         });
 
     if (radiusError) throw radiusError;
@@ -61,10 +61,10 @@ export async function fetchRekomendasiKos(params: { lat: number; lng: number; ra
 export async function fetchPremiumKos(params: { lat: number; lng: number; radius: number }): Promise<KosData[]> {
     // First get kos within radius with distance calculation
     const { data: kosWithinRadius, error: radiusError } = await supabase
-        .rpc('get_kos_within_radius', {
+        .rpc('get_kos_within_radius_haversine', {
             user_lat: params.lat,
             user_lng: params.lng,
-            search_radius: params.radius
+            search_radius_km: params.radius
         }) as { data: { kos_id: number; kos_premium: boolean }[] | null, error: any };
 
     if (radiusError) throw radiusError;

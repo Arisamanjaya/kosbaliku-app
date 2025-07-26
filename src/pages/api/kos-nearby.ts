@@ -21,10 +21,10 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Query untuk filter berdasarkan jarak menggunakan Haversine Formula
         const { data, error } = await supabase
-            .rpc("get_kos_within_radius", {
+            .rpc("get_kos_within_radius_haversine", {
                 user_lat: latitude,
                 user_lng: longitude,
-                search_radius: searchRadius
+                search_radius_km: searchRadius
             });
 
         if (error) throw error;
