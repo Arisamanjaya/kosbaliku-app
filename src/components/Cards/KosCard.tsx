@@ -42,6 +42,8 @@ export default function KosCard({ kos }: KosCardProps) {
             lng: parseFloat(lng as string),
             name: locationName as string
         }))}` : '';
+    
+    const sortedFasilitas = fasilitas ? [...fasilitas].sort((a, b) => a.localeCompare(b)) : [];
 
     return (
         <Link href={`/kos/${createValidSlug()}${sourceLocationParam}`} className="cursor-pointer">
@@ -51,18 +53,20 @@ export default function KosCard({ kos }: KosCardProps) {
                         <>
                             {/* Background blurred image - z-index 0 */}
                             <Image
-                                src={gambar}
-                                alt=""
-                                fill
-                                className="absolute inset-0 object-cover blur-sm opacity-50 z-0"
-                                onError={() => {/* Handle error silently */}}
-                            />
+                            src={gambar}
+                            alt=""
+                            fill
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                            className="absolute inset-0 object-cover blur-sm opacity-50 z-0"
+                            onError={() => {/* Handle error silently */}}
+                        />
                             
                             {/* Main image - z-index 1 */}
                             <Image
                                 src={gambar}
                                 alt={kos_nama || ""}
                                 fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 className="object-contain rounded-2xl relative z-[1]"
                                 onError={() => {/* Handle error silently */}}
                             />
@@ -95,7 +99,7 @@ export default function KosCard({ kos }: KosCardProps) {
                         <p className="text-sm font-medium">{kos_lokasi}</p>
                     </div>
                     <p className="text-xs font-light truncate text-slate-500">
-                        {fasilitas && fasilitas.length > 0 ? fasilitas.join(" • ") : "Tidak ada fasilitas"}
+                        {sortedFasilitas.length > 0 ? sortedFasilitas.join(" • ") : "Tidak ada fasilitas"}
                     </p>
                 </div>
                 <h5 className="text-secondary-500">
