@@ -1,4 +1,6 @@
 import { IconMapPin, IconClock, IconRuler, IconRoute } from "@tabler/icons-react";
+import { useJsApiLoader } from '@react-google-maps/api';
+import { googleMapsApiOptions } from '@/src/utils/googleMapsConfig';
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from 'next/router';
 
@@ -13,6 +15,7 @@ interface LokasiKosProps {
 export default function LokasiKos({ kos }: LokasiKosProps) {
   const apiKey = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
   const router = useRouter();
+  const { isLoaded } = useJsApiLoader(googleMapsApiOptions);
   
   // Get selected location from URL query parameters
   const { sourceLocation } = router.query;
@@ -76,6 +79,8 @@ export default function LokasiKos({ kos }: LokasiKosProps) {
 
   // Calculate distance using Distance Matrix API
   const calculateDistance = useCallback(() => {
+    if (!isLoaded) return; // Add this check
+    
     const origin = selectedLocation || userLocation;
     if (!origin) return;
     
@@ -113,15 +118,25 @@ export default function LokasiKos({ kos }: LokasiKosProps) {
         }
       }
     );
-  }, [selectedLocation, userLocation, kos.kos_lat, kos.kos_lng]);
-
-  // Calculate distance when location is available
+  }, [selectedLocation, userLocation, kos.kos_lat, kos.kos_lng, isLoaded]); // Add isLoaded to dependencies
+  
+  // Update the useEffect to check for isLoaded
   useEffect(() => {
     const locationSource = selectedLocation || userLocation;
-    if (locationSource && !distanceInfo && !isCalculating && !error) {
+    if (isLoaded && locationSource && !distanceInfo && !isCalculating && !error) {
       calculateDistance();
     }
-  }, [selectedLocation, userLocation, distanceInfo, isCalculating, error, calculateDistance]);
+  }, [selectedLocation, userLocation, distanceInfo, isCalculating, error, calculateDistance, isLoaded]);
+  
+  // Add loading state handling
+  if (!isLoaded) {
+    return (
+      <div className="py-2">
+        <h3 className="text-2xl font-semibold text-slate-800 mb-4">Lokasi Kos</h3>
+        <div className="text-sm text-slate-500">Memuat peta...</div>
+      </div>
+    );
+  }
 
   // Toggle directions view
   const toggleDirections = () => {
