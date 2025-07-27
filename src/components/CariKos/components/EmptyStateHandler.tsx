@@ -9,6 +9,8 @@ interface EmptyStateHandlerProps {
         premium?: boolean;
         fasilitas?: string[];
         durasi?: string;
+        minPrice?: number;
+        maxPrice?: number;
     };
 }
 
@@ -39,6 +41,20 @@ export default function EmptyStateHandler({
             subMessage += `${subMessage ? 'dengan ' : 'Tidak ada kos dengan '}fasilitas yang dipilih `;
         }
         
+        // Add price range feedback
+        if (appliedFilters.minPrice || appliedFilters.maxPrice) {
+            const formatPrice = (price: number) => 
+                `Rp${price.toLocaleString('id-ID')}`;
+
+            if (appliedFilters.minPrice && appliedFilters.maxPrice) {
+                subMessage += `${subMessage ? 'dalam rentang harga ' : 'Tidak ada kos dalam rentang harga '}${formatPrice(appliedFilters.minPrice)} - ${formatPrice(appliedFilters.maxPrice)} `;
+            } else if (appliedFilters.minPrice) {
+                subMessage += `${subMessage ? 'dengan harga di atas ' : 'Tidak ada kos dengan harga di atas '}${formatPrice(appliedFilters.minPrice)} `;
+            } else if (appliedFilters.maxPrice) {
+                subMessage += `${subMessage ? 'dengan harga di bawah ' : 'Tidak ada kos dengan harga di bawah '}${formatPrice(appliedFilters.maxPrice)} `;
+            }
+        }
+        
         if (appliedFilters.durasi) {
             subMessage += `${subMessage ? 'untuk ' : 'Tidak ada kos untuk '}durasi ${appliedFilters.durasi} `;
         }
@@ -60,6 +76,7 @@ export default function EmptyStateHandler({
                     alt="No results found"
                     fill
                     priority
+                    sizes="(max-width: 768px) 256px, 192px"
                     className="object-contain"
                 />
             </div>
