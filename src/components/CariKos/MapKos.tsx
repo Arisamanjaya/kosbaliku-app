@@ -20,6 +20,23 @@ interface MapKosProps {
     onLoad?: () => void;
 }
 
+const calculateHaversineDistance = (
+    lat1: number,
+    lon1: number,
+    lat2: number,
+    lon2: number
+): number => {
+    const R = 6371; // Earth's radius in kilometers
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = 
+        Math.sin(dLat/2) * Math.sin(dLat/2) +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+        Math.sin(dLon/2) * Math.sin(dLon/2);
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+    return R * c;
+};
+
 const MapKos = ({
     kosList, 
     center, 
@@ -372,20 +389,44 @@ const MapKos = ({
                             
                             {/* Distance and travel time info here... */}
                             {isCalculatingDistance ? (
-                                <p className="text-xs text-gray-500 mb-2">Menghitung jarak...</p>
+                                <div className="flex flex-col gap-1 mb-2">
+                                    <p className="text-xs text-gray-500">Menghitung jarak...</p>
+                                    <p className="text-xs text-gray-600 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                        </svg>
+                                        Jarak lurus: {calculateHaversineDistance(
+                                            center.lat,
+                                            center.lng,
+                                            selectedKos.kos_lat,
+                                            selectedKos.kos_lng
+                                        ).toFixed(1)} km
+                                    </p>
+                                </div>
                             ) : distanceInfo ? (
                                 <div className="flex flex-col gap-1 mb-2">
                                     <p className="text-xs text-gray-600 flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7" />
                                         </svg>
-                                        Jarak: {distanceInfo.distance}
+                                        Jarak tempuh: {distanceInfo.distance}
                                     </p>
                                     <p className="text-xs text-gray-600 flex items-center">
                                         <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
                                         </svg>
                                         Waktu tempuh: {distanceInfo.duration}
+                                    </p>
+                                    <p className="text-xs text-gray-600 flex items-center">
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-primary-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                                        </svg>
+                                        Jarak Radius: {calculateHaversineDistance(
+                                            center.lat,
+                                            center.lng,
+                                            selectedKos.kos_lat,
+                                            selectedKos.kos_lng
+                                        ).toFixed(1)} km
                                     </p>
                                 </div>
                             ) : null}
