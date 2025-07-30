@@ -27,7 +27,7 @@ export async function fetchKosList({
     fasilitas = [],
     premium = false,
     page = 1,
-    limit = 10,
+    limit = 6,
     lat,
     lng,
     radius = 5,

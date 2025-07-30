@@ -18,7 +18,7 @@ type ViewMode = 'list' | 'map';
 type SortOption = 'Terdekat' | 'Harga Terendah' | 'Harga Tertinggi';
 
 export default function CariKosLayout() {
-    const PAGE_SIZE = 10;
+    const PAGE_SIZE = 6;
     const [kosList, setKosList] = useState<KosData[]>([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
