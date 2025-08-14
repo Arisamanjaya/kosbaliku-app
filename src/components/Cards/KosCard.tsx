@@ -79,7 +79,7 @@ export default function KosCard({ kos }: KosCardProps) {
                     
                     {/* Premium badge - z-index 2 */}
                     {kos_premium && (
-                        <div className="absolute top-2 left-2 bg-rose-500 text-white text-xs px-2 py-1 rounded z-[2]">
+                        <div className="absolute top-2 left-2 bg-secondary-500 text-white text-xs px-2 py-1 rounded z-[2]">
                             Premium
                         </div>
                     )}

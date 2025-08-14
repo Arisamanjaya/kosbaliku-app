@@ -80,7 +80,7 @@ export default function KosCardMobile({ kos }: KosCardMobileProps) {
                     
                     {/* Premium badge - z-index 2 */}
                     {kos_premium && (
-                        <div className="absolute top-2 left-2 bg-rose-500 text-white text-[8px] px-1 py-1 rounded z-[2]">
+                        <div className="absolute top-2 left-2 bg-secondary-500 text-white text-[8px] px-1 py-1 rounded z-[2]">
                             Premium
                         </div>
                     )}
@@ -90,7 +90,7 @@ export default function KosCardMobile({ kos }: KosCardMobileProps) {
                         <p className="text-[10px] font-medium text-primary-500 border border-primary-500 rounded-full px-1 py-0.5">
                             {kos_tipe}
                         </p>
-                        <p className="text-xs font-normal text-secondary-500 italic">
+                        <p className="text-xs font-normal text-secondary-600 italic">
                             {kos_avail ? "Kamar Tersedia" : "Kamar Kosong"}
                         </p>
                     </div>
