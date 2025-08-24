@@ -39,9 +39,13 @@ function MenuLinks() {
 function AuthButtons() {
   return (
     <div className="hidden lg:flex gap-4">
-      <button className="px-4 py-2 text-primary-500 border border-primary-500 rounded-full">Iklankan Kos</button>
-      <button className="px-4 py-2 bg-primary-500 text-white rounded-full">Masuk</button>
-    </div>
+            <Link href="https://dashboard-kosbaliku-git-main-arisamanjayas-projects.vercel.app/login" target="_blank" rel="noopener noreferrer">
+                <button className="px-4 py-2 text-primary-500 border border-primary-500 rounded-full">Iklankan Kos</button>
+            </Link>
+            <Link href="https://dashboard-kosbaliku-git-main-arisamanjayas-projects.vercel.app/login" target="_blank" rel="noopener noreferrer">
+                <button className="px-4 py-2 bg-primary-500 text-white rounded-full">Masuk</button>
+            </Link>
+        </div>
   );
 }
 
@@ -72,13 +76,17 @@ function MobileMenu({ isOpen, onClose }: { isOpen: boolean; onClose: () => void 
       </ul>
       <hr className="w-2/3 border-slate-300 my-4 mx-auto" />
       <div className="flex flex-col items-center gap-3">
-        <button className="min-w-40 px-6 py-3 border border-primary-500 rounded-full text-primary-500">
-          Iklankan Kos
-        </button>
-        <button className="min-w-40 px-6 py-3 bg-primary-500 text-white rounded-full">
-          Masuk
-        </button>
-      </div>
+            <Link href="https://dashboard-kosbaliku-git-main-arisamanjayas-projects.vercel.app/login" target="_blank" rel="noopener noreferrer">
+                <button className="min-w-40 px-6 py-3 border border-primary-500 rounded-full text-primary-500">
+                    Iklankan Kos
+                </button>
+            </Link>
+            <Link href="https://dashboard-kosbaliku-git-main-arisamanjayas-projects.vercel.app/login" target="_blank" rel="noopener noreferrer">
+                <button className="min-w-40 px-6 py-3 bg-primary-500 text-white rounded-full">
+                    Masuk
+                </button>
+            </Link>
+        </div>
     </div>
   );
 }

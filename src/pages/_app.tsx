@@ -14,7 +14,7 @@ const App = ({ Component, pageProps }: AppProps) => {
         <Head>
         <link rel="icon" type="image/svg+xml" href="/webIcon.svg" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>KosBaliku</title>
+        <title>Kosbalixyz</title>
         </Head>
         <Component {...pageProps} />
       </QueryClientProvider>
